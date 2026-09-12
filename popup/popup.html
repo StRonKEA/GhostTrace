@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GhostTrace</title>
+  <link rel="stylesheet" href="../ui/theme.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- Marka en ustte ama en KUCUK oge: popup'ta asil konu acik olan site,
+       eklentinin adi degil. Simge, arac cubugunda gorunenle AYNI olmali -
+       jenerik bir SVG degil. -->
+  <header class="top">
+    <span class="top__mark" aria-hidden="true">
+      <img src="../icons/icon-48.png" alt="" width="16" height="16">
+    </span>
+    <span class="top__name" data-i18n="common.appName">GhostTrace</span>
+    <span class="sr-only" data-i18n="common.appTagline"></span>
+    <button id="btnOpenOptions" class="btn btn--icon btn--quiet top__cog" type="button"
+            data-i18n-title="popup.settingsTitle" data-i18n-aria="popup.settingsTitle" aria-label="">
+      <span class="gt-icon gt-icon--sm" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+      </span>
+    </button>
+  </header>
+
+  <!-- ASIL KONU: acik olan site. Durum rozeti adin YANINDA - sayfayi
+       okumadan once durumu gormek gerekiyor. -->
+  <section id="domainCard" class="site">
+    <div class="site__row">
+      <span id="currentDomain" class="site__name" data-i18n="common.loading"></span>
+      <span id="statusBadge" class="site__status badge-default">
+        <span class="status-text" data-i18n="popup.statusDefault"></span>
+      </span>
+    </div>
+
+    <!-- VERI KARARDAN ONCE: "ne kaybederim?" sorusu, karar aninda
+         yanitlanmali. Ayarlar sayfasina gitmeye gerek kalmiyor. -->
+    <p class="site__lbl" id="dataLabel" data-i18n="popup.dataLabel"></p>
+    <div class="metrics">
+      <div class="metric">
+        <span class="metric-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><circle cx="9.2" cy="10.4" r="1.15" fill="currentColor" stroke="none"/><circle cx="14.4" cy="12.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="10.8" cy="15.4" r="0.95" fill="currentColor" stroke="none"/></svg></span>
+        <span class="metric-txt">
+          <span class="metric-name" data-i18n="common.cookies"></span>
+          <span id="cookieCount" class="metric-value">0</span>
+        </span>
+      </div>
+      <div class="metric">
+        <span class="metric-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg></span>
+        <span class="metric-txt">
+          <span class="metric-name" data-i18n="common.history"></span>
+          <span id="historyCount" class="metric-value">0</span>
+        </span>
+      </div>
+      <div class="metric">
+        <span class="metric-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 4v10"/><polyline points="8 11 12 15 16 11"/><path d="M5 19h14"/></svg></span>
+        <span class="metric-txt">
+          <span class="metric-name" data-i18n="common.downloads"></span>
+          <span id="downloadCount" class="metric-value">0</span>
+        </span>
+      </div>
+      <!-- 3. TARAF izgaranin DORDUNCU hucresi. Bir ara kendi satirina
+           cikarilmisti; etiketi duzeltiyordu ama 37px yiyip korumali durumu
+           600px'in ustune tasidi. Hucre olarak bedava ve sayilar zaten ayni
+           soruya cevap: "bu sayfada ne var". Sayinin sitenin verisi OLMADIGI
+           soluk renkle ayirt ediliyor; onay penceresine de katilmiyor. -->
+      <div class="metric">
+        <span class="metric-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14 14 0 0 1 3.6 9 14 14 0 0 1-3.6 9 14 14 0 0 1-3.6-9A14 14 0 0 1 12 3z"/></svg></span>
+        <span class="metric-txt">
+          <span class="metric-name" data-i18n="common.thirdParty"></span>
+          <span id="thirdPartyCount" class="metric-value">0</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- "Yalnizca gecmisi sil" dugmesi KALDIRILDI. Ayni islem
+         Ayarlar > Site verileri sayfasinda site basina duruyor
+         (options/tabs/site-data.js), yani yetenek degil KISAYOL gitti.
+         Yerine kazanilan 40px, olcum tablosunun 2x2 duzenine ve iki
+         satirlik ikonlara harcandi - o duzen 4 sutunda 600px sinirini
+         asiyordu (olculdu: 1x4+40px ikon = 602px, 2x2+40px = 639px,
+         dugme kalkinca 599px). -->
+  </section>
+
+  <!-- Erisim kisitli -->
+  <section id="accessCard" class="notice hidden">
+    <strong class="notice__title" data-i18n="popup.noAccessTitle"></strong>
+    <p class="notice__text" data-i18n="popup.noAccessDesc"></p>
+    <button id="btnGrantAccess" class="btn btn--primary" type="button">
+      <span data-i18n="popup.grantAccessBtn"></span>
+    </button>
+  </section>
+
+  <!-- Tarayici ici sayfa -->
+  <section id="internalCard" class="notice hidden">
+    <strong class="notice__title" data-i18n="popup.internalPageTitle"></strong>
+    <p class="notice__text" data-i18n="popup.internalPageDesc"></p>
+  </section>
+
+  <!-- KARAR: iki secim. Kartlar TIKLANDIGI ANDA uygulanir; ayri bir
+       "Uygula" adimi yok. Yaygin durum tek tik, farkli sure isteyen once
+       sureyi degistirir. -->
+  <div class="acts" id="actionsSection">
+    <div id="decisionBlock" class="fold">
+    <p class="acts__q" data-i18n="popup.decisionQuestion"></p>
+
+    <div class="picks">
+      <!-- Ikon metnin SOLUNDA ve iki satir yuksekliginde. Ustte dururken
+           kendi satirini yiyordu; korumali durum 607px olculmus ve Chrome
+           600px'te kaydirma cubugu uretiyor - bu yerlesim o payi geri veriyor. -->
+      <button id="cardProtect" class="pick" type="button">
+        <span class="pick__ic gt-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </span>
+        <span class="pick__txt">
+          <span class="pick__t" data-i18n="popup.pickProtectTitle"></span>
+          <span class="pick__d" data-i18n="popup.pickProtectDesc"></span>
+        </span>
+      </button>
+
+      <button id="cardClean" class="pick" type="button">
+        <span class="pick__ic gt-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/>
+          </svg>
+        </span>
+        <span class="pick__txt">
+          <span class="pick__t" data-i18n="popup.pickCleanTitle"></span>
+          <span class="pick__d" data-i18n="popup.pickCleanDesc"></span>
+        </span>
+      </button>
+    </div>
+
+    <div id="scopeOpts" class="opts opts--bare hidden">
+      <!-- KAPSAM: sure seridiyle AYNI desen (.durseg), acilir menu DEGIL.
+         Onceki tasarim tek satirlik bir dugmeydi ve etiketi alan adini
+         tasiyordu ("Alt alan adlari dahil (*.ecc.tools)"); dar popup'ta uzun
+         alan adlarinda tasiyor, actigi menu de panelin altinda kaliyordu.
+         Iki secenek iki dugmeye sigiyor: alan adini tekrar etmeye gerek yok,
+         zaten kartin ustunde yaziyor. Etiketler Ayarlar > Kurallar
+         sayfasindakiyle AYNI ceviri anahtarlarindan geliyor - iki yuzeyin
+         ayni kapsami farkli adlandirmasi bu projede daha once sapma
+         uretmisti.
+
+         YER: Koru/Temizle ikilisinin DIREK altinda, sure seridinin USTUNDE
+        . Onceden sure seridinin ALTINDAydi ve "Ne kadar sureyle"
+         basliginin kapsamina giriyordu - iki AYRI eksen tek baslik altinda.
+         Kullanici bunu bildirdi. Cozum baslik eklemek DEGIL yeri
+         duzeltmek: okuma sirasi artik "ne yapilsin -> hangi kapsamda ->
+         ne kadar sureyle". Kapsam kendi basligina ihtiyac duymuyor cunku
+         artik yanlis bir basligin altinda degil ve dugme metinleri kendini
+         anlatiyor; grubun aria-label'i ekran okuyucuya adini veriyor. -->
+      <div id="scopeSeg" class="durseg durseg--scope" role="group"
+         data-i18n-aria="popup.whitelistMenuHeader" aria-label="">
+        <!-- data-i18n VARSAYILAN AD verir. Metinleri renderScope() yaziyor
+           ama o AKTIF SEKME bilgisine bagli; popup bir siteye bakmiyorsa
+           (ya da veri gelmeden once) dugmeler ADSIZ kaliyordu - popup'taki
+           tek adsiz iki dugme bunlardi. i18n acilista dolduruyor,
+           renderScope sonra alt alan adina gore inceltiyor. -->
+        <button id="scopeExact" class="durseg__b" type="button"
+              data-i18n="options.scopeExact"></button>
+        <button id="scopeSubs" class="durseg__b" type="button"
+              data-i18n="options.scopeAll"></button>
+      </div>
+    </div>
+
+    <!-- Sure YALNIZCA koruma secildiginde anlamli. "Temizle" secince
+         gizlenir; islevsiz bir kontrol gostermek belirsizlik uretir. -->
+    <div id="protectOpts" class="opts hidden">
+
+      <span class="opts__h" id="durationHeader" data-i18n="popup.durationHeader"></span>
+      <div class="durseg" role="group" aria-labelledby="durationHeader">
+        <button class="durseg__b" type="button" data-dur="white">
+          <span data-i18n="popup.durPermanent"></span>
+        </button>
+        <button class="durseg__b" type="button" data-dur="session">
+          <span data-i18n="popup.snoozeSessionShort"></span>
+        </button>
+        <button class="durseg__b" type="button" data-dur="60">
+          <span data-i18n="popup.snooze1hTitle"></span>
+        </button>
+        <button class="durseg__b" type="button" data-dur="1440">
+          <span data-i18n="popup.snooze24hTitle"></span>
+        </button>
+      </div>
+    </div>
+
+    </div><!-- /decisionBlock -->
+
+    <!-- ONAY: secenekler katlaninca YERINE gelir. Veri tablosu ekranda
+         kalir - neyi kaybedecegini gorerek onaylamak icin. -->
+    <div id="confirmBox" class="confirm hidden">
+      <p class="confirm__h" data-i18n="popup.confirmTitle"></p>
+      <p id="confirmText" class="confirm__x"></p>
+      <div class="confirm__b">
+        <!-- ASIMETRIK ve bilincli: "Vazgec" genis, tetikleyici dugmenin
+             ortasina gelen hizli IKINCI TIK buraya duser. Yanlis tik
+             korumasi konumdan gelir, animasyon suresinden degil. -->
+        <button id="btnConfirmNo" class="cbtn cbtn--no" type="button"
+                data-i18n="popup.confirmNo"></button>
+        <button id="btnConfirmYes" class="cbtn btn--danger-solid" type="button"
+                data-i18n="popup.confirmYes"></button>
+      </div>
+    </div>
+
+    <!-- YIKICI eylem ayri satirda ve altta: ayar kaydetmekle veri silmek
+         ayni agirlikta durmamali. -->
+    <div class="acts__danger">
+      <button id="btnPurgeNow" class="btn btn--danger purge" type="button"
+              data-i18n-title="popup.purgeDefaultTooltip">
+        <span class="btn-text" data-i18n="popup.purgeNowBtn"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HATA SERIDI: AKISTA durur, ustune binmez.
+       Eski bildirim position:fixed idi ve en alttaki ana anahtari
+       ortuyordu (kullanici ekran goruntusuyle bildirdi).
+
+       BASARI mesaji yok: islem olunca sayilar sifirlaniyor, durum rozeti
+       ve kartlar degisiyor, anahtar kayiyor - sonuc zaten ekranda. Ayrica
+       "oldu" demek gereksiz gurultu.
+
+       HATA ise gorunmez: islem OLMADIGI icin ekranda hicbir sey degismez.
+       Soylenmezse kullanici islemin olduğunu sanir - sessiz basarisizlik
+       bu eklentide en tehlikeli hata sinifi. -->
+  <div id="errorNotice" class="enotice hidden" role="alert" aria-live="assertive"></div>
+
+  <!-- Ana anahtar EN ALTTA: nadiren dokunulan bir ayar, her acilista gozu
+       ilk karsilamamali. Gunluk is site karari. -->
+  <div class="master">
+    <label class="master__label" for="masterToggle" data-i18n="popup.autoCleanTitle"></label>
+    <span id="delayBadge" class="tag mono"></span>
+    <label class="switch">
+      <input type="checkbox" id="masterToggle">
+      <span class="switch__track"></span>
+    </label>
+  </div>
+
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

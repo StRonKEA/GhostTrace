@@ -1,0 +1,1471 @@
+/* GhostTrace - ayarlar sayfasi.
+ *
+ * Belirtecler ve ilkeller ../ui/theme.css icinde. Burada YALNIZCA bu sayfaya
+ * ait yerlesim var.
+ *
+ * Hiyerarsi kutuyla degil YAZI ve BOSLUKLA kurulur. Onceki surumde her grup
+ * kenarlikli bir kart icindeydi; dokuz kart alt alta gelince hicbiri one
+ * cikmiyor, sayfa 3900 piksele uzuyordu. Kart artik yalnizca gercekten
+ * TABLO olan icerik icin var.
+ *
+ * Asagidaki bazi sinif adlari (.metric-strip, .log-console-wrap,
+ * .log-empty-overlay, .search-box, .table-toolbar, .header-tools) SERBEST
+ * SECIM DEGIL: her biri gercek tarayicida olculmus bir kayma/ziplama
+ * duzeltmesini tasiyor ve butunluk testleri bunlari koruyor.
+ */
+
+/* ============================================================
+   ISKELET
+   ============================================================ */
+
+.skip-link {
+  position: absolute;
+  left: var(--sp-3);
+  top: -100px;
+  z-index: 100;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1px solid var(--control-border);
+  transition: top var(--t-base) var(--ease);
+}
+.skip-link:focus { top: var(--sp-3); }
+
+.shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: 216px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+/* Kenar sutununun ZEMINI sayfanin tamamini kaplar.
+   .side sticky ve 100vh oldugu icin uzun sayfalarda kendi zemini ekran
+   yuksekliginde bitiyor, altinda tuval rengi gorunuyor ve sutun yarida
+   kesilmis gibi duruyordu. Zemini kaba tasiyoruz. */
+.shell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 216px;
+  border-right: 1px solid var(--divider);
+  background: var(--surface);
+}
+
+/* ---------- Kenar ---------- */
+
+.side {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  padding: var(--sp-4) var(--sp-3);
+  /* Zemin ve kenarlik .shell::before uzerinde; bkz. yukaridaki not. */
+}
+
+.side__brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-2) var(--sp-5);
+}
+/* Marka simgesi: eklentinin GERCEK ikonu (icons/icon-48.png), jenerik bir
+   kalkan SVG'si degil. `color` kurali kaldirildi - PNG renk devralmaz ve
+   kalmasi "bu oge renklendirilebilir" yanilgisi birakirdi. */
+.side__mark {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  align-self: center;
+  object-fit: contain;
+}
+.side__name {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+.side__ver {
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+
+.side__nav { display: flex; flex-direction: column; gap: 2px; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  /* 36px: yogun panel olcusu ama fare hedefi olarak hala rahat. */
+  min-height: 36px;
+  padding: 0 var(--sp-3);
+  border-radius: var(--r-md);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  text-align: left;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.nav-item:hover { background: var(--surface-hover); color: var(--text); }
+
+/* Secili durum: hap ve parilti degil, YUZEY + AGIRLIK + sol cizgi.
+   Renkli hap butun listeyi susleme haline getiriyordu. */
+.nav-item.active {
+  position: relative;
+  background: var(--surface-hover);
+  color: var(--text);
+  font-weight: 600;
+}
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+.nav-item .gt-icon { color: var(--text-faint); }
+.nav-item.active .gt-icon { color: var(--accent-text); }
+
+/* ---------- Ana alan ---------- */
+
+.main {
+  min-width: 0;
+  padding: var(--sp-6) var(--sp-6) var(--sp-7);
+}
+/* Okunabilir olcu: 1100px'ten genis satirlarda goz satir basini kaybeder. */
+.tab-panel { display: none; max-width: 1080px; }
+.tab-panel.active { display: block; }
+
+/* ---------- Sayfa basligi ---------- */
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-bottom: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  border-bottom: 1px solid var(--divider);
+}
+.head__text { min-width: 0; }
+.head__title {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  letter-spacing: -.015em;
+}
+.head__sub {
+  margin-top: var(--sp-1);
+  max-width: 68ch;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+/* Baslik altindaki kisa not ("ayarlar otomatik kaydedilir" gibi). Sinif
+   isaretlemede vardi ama CSS karsiligi YOKTU: not, govde metniyle ayni
+   agirlikta cikiyor ve baslikla yarisiyordu. Kardesi .head__sub ile ayni
+   dili konusuyor, yalnizca daha kisa oldugu icin genislik siniri yok. */
+.head__note {
+  margin-top: var(--sp-1);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* YALNIZCA IKON tasiyan dugme. Sinif isaretlemede vardi ama CSS karsiligi
+   YOKTU: dugme .btn'in yatay dolgusunu (sp-3) aliyor ve 12px'lik bir ikonun
+   iki yaninda genis bos alanla duruyordu. Kare yapiyoruz. */
+.btn.btn-icon-only {
+  justify-content: center;
+  width: 32px;
+  padding: 0;
+}
+
+.head__actions,
+.header-tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ============================================================
+   GRUP (kart DEGIL)
+   ============================================================ */
+
+/* ---------- BOLUM DIKEY RITMI ----------
+   Ayni gorsel iliski her yerde AYNI olculmeli. Kullanici "yazilar arasi
+   mesafeler uyumsuz, yakin duruyor" dedi ve olcum onu dogruladi:
+
+     baslik -> aciklama :  4px (h2 + p)  ama  12px (grp__head + p)
+     aciklama -> tablo  :  0px  - hicbir kural yoktu; `.grp__sub + .panel`
+                           eslesmesi hic yazilmamis, yalnizca .row /
+                           .toggle-list / .permrow kapsanmisti.
+     status-line -> bolum: 16px  ama bolumler arasi 32px
+
+   Tek olcek: sikica bagli olanlar sp-2, icerige gecis sp-3, bolumler sp-6. */
+.grp { margin-bottom: var(--sp-6); }
+.grp__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  /* sp-3 -> sp-2: h2 + p ile AYNI olsun. Ikisi de basligi aciklamasina
+     bagliyor; farkli olmalari icin bir sebep yok. */
+  margin-bottom: var(--sp-2);
+}
+.grp__title {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.grp__sub {
+  /* sp-1 -> sp-2: grp__head'in alt bosluguyla ayni. Ikisi cakisir (margin
+     collapse) ve deger her iki bolum bicimi icin de sp-2 olur. */
+  margin-top: var(--sp-2);
+  max-width: 72ch;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+/* ACIKLAMANIN ALT BOSLUGU, kardes seciciyle DEGIL kendi uzerinde.
+   Onceden her icerik turu icin ayri bir `.grp__sub + X` kurali yaziliyordu.
+   Iki sorunu vardi:
+     * yeni bir icerik turu eklenince kural yazilmasi UNUTULUYOR (istatistik
+       tablolarinda `.panel` boyle atlanmisti, bosluk 0px kalmisti),
+     * `+` BITISIK kardes demek: aradaki oge gizlenirse kural DUSER. Gizlilik
+       sertlestirmede izin satiri gizlendiginde (izin zaten verilmisse) tam
+       bu oldu - aciklama toggle listesine yapisik duruyordu.
+   Kendi alt boslugu her iki durumda da calisir; asagidaki `+` kurallari
+   aciklamasi OLMAYAN bolumler icin kaliyor. Kenar bosluklari cakisir
+   (collapse), dolayisiyla ikisi ust uste binmez. */
+.grp__sub { margin-bottom: var(--sp-3); }
+
+.grp__title + .row,
+.grp__sub + .row,
+.grp__title + .toggle-list,
+.grp__sub + .permrow,
+/* .panel EKSIKTI: istatistik tablolari bu kapta yasiyor, dolayisiyla
+   aciklama ile tablo BITISIK duruyordu (p{margin:0} reseti yuzunden 0px). */
+.grp__title + .panel,
+.grp__sub + .panel,
+.grp__head + .panel { margin-top: var(--sp-3); }
+
+/* Ozet satiri ile onu izleyen bolum arasi, bolumler arasiyla AYNI olmali;
+   yoksa ilk bolum sayfanin geri kalanindan daha sikisik durur. */
+.status-line + .grp { margin-top: var(--sp-6); }
+.grp__act { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-3); }
+
+.grp--danger .grp__title { color: var(--danger); }
+
+/* ============================================================
+   AYAR SATIRI
+   ============================================================ */
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    "text info control"
+    "detail detail detail";
+  align-items: center;
+  gap: 0 var(--sp-3);
+  min-height: 44px;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--divider);
+}
+.row:last-child { border-bottom: none; }
+
+.row__text { grid-area: text; min-width: 0; }
+.row__label {
+  display: block;
+  font-size: var(--fs-body);
+  cursor: pointer;
+}
+.row__control { grid-area: control; width: 200px; }
+.row__unit { color: var(--text-muted); font-size: var(--fs-sm); }
+
+.switch { grid-area: control; }
+
+/* Bagli ayar: girinti hiyerarsiyi metin okumadan gosterir. */
+.row--child { padding-left: var(--sp-5); }
+.row--child .row__label { color: var(--text-muted); }
+
+/* Bagli ayar kilitli. BU KURAL ZORUNLU: sinifi JS ekliyor ama karsiligi
+   olmadan kutu tipatip aktif gorunup sessizce tiklamayi reddediyordu. */
+.toggle-item.is-locked { opacity: .45; pointer-events: none; }
+.toggle-list.is-locked { opacity: .45; pointer-events: none; }
+
+/* Kademeli aciklama: uzun metin ve uyarilar (i) altinda. Hepsi gorunur
+   kalinca 25 ayarlik sayfa 3900 piksel oluyor ve hicbiri taranamiyordu. */
+.row__info {
+  grid-area: info;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Gorsel 14px, DOKUNMA ALANI 28px. */
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-md);
+  color: var(--text-faint);
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.row__info:hover { background: var(--surface-hover); color: var(--text); }
+.row__info[aria-expanded="true"] { background: var(--surface-hover); color: var(--accent-text); }
+
+.row__detail {
+  grid-area: detail;
+  max-width: 78ch;
+  padding: var(--sp-2) 0 var(--sp-1);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+.row__detail > * + * { margin-top: var(--sp-2); }
+
+/* Dikey duzende kontrol tam satiri alir (gecikme sureci gibi). */
+.row--stack {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "text" "control" "detail";
+  align-items: stretch;
+  gap: var(--sp-2);
+}
+
+.delay {
+  grid-area: control;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.delay__range { flex: 1; min-width: 120px; accent-color: var(--accent); }
+.delay__num { width: 88px; text-align: right; }
+
+/* ---------- Not ve ipucu ---------- */
+
+.note {
+  max-width: 78ch;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+.note--warn {
+  padding: var(--sp-2) var(--sp-3);
+  border-left: 2px solid var(--warn);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.hint {
+  max-width: 84ch;
+  margin-bottom: var(--sp-3);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+.hint__lead { color: var(--text); font-weight: 600; }
+.hint__lead + span { margin-right: var(--sp-3); }
+
+.permrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-3);
+}
+
+/* ============================================================
+   KURAL EKLEME
+   ============================================================ */
+
+.addrule {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.addrule__domain { flex: 1 1 260px; min-width: 0; }
+.addrule__type { flex: 0 0 auto; width: auto; min-width: 190px; }
+.addrule__scope { flex: none; }
+
+.check {
+  display: inline-flex;
+  /* Etkin dokunma hedefi ETIKETIN kendisi (kutucuk 15px). 21px olculmustu,
+     WCAG 2.5.8 en az 24px istiyor. */
+  min-height: 24px;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.check input { accent-color: var(--accent); width: 15px; height: 15px; }
+
+.linkbtn {
+  color: var(--accent-text);
+  font-size: var(--fs-sm);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ============================================================
+   ARAC CUBUGU / ARAMA / SEGMENT
+   ============================================================ */
+
+/* .table-toolbar: onceden HTML `.toolbar-card` tasiyordu ve o sinif CSS'te
+   HIC yoktu - kap display:block kalinca arama kutusu 962px yer kaplayip
+   girdi 240px'te kaliyordu. Kural burada ve tanimli. */
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-3);
+}
+
+.search-box {
+  position: relative;
+  flex: 1 1 240px;
+  max-width: 340px;
+  min-width: 180px;
+}
+.search-icon {
+  position: absolute;
+  left: var(--sp-3);
+  top: 50%;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  transform: translateY(-50%);
+  color: var(--text-faint);
+  pointer-events: none;
+}
+.search-box__input { padding-left: 34px; padding-right: 32px; }
+.search-box__clear {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  transform: translateY(-50%);
+  border-radius: var(--r-sm);
+  color: var(--text-faint);
+}
+.search-box__clear:hover { color: var(--text); background: var(--surface-hover); }
+
+.segs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--divider);
+  border-radius: var(--r-md);
+  background: var(--surface-sunken);
+}
+.seg {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 26px;
+  padding: 0 var(--sp-3);
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.seg:hover { color: var(--text); }
+.seg.active {
+  background: var(--surface);
+  color: var(--text);
+  /* font-weight DEGISMEZ: kalin metin genisligi buyutup komsu cipi itiyordu. */
+  /* Cerceve divider -> control-border. divider DEKORATIF bir cizgi
+     ve bilincli dusuk kontrastli; secili cipin sinirini cizmek onun isi
+     degil. control-border tam bu is icin var ve 3:1 tutuyor (WCAG 1.4.11).
+     Renk EKLENMEDI: bu cipler filtre ve mod secimi, accent ise bu arayuzde
+     "korunuyor" demek - filtreyi yesile boyamak o anlami sulandirirdi. */
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--control-border);
+}
+.seg__n {
+  /* min-width + tablo rakami: 9 -> 10 gecisinde cip genisligi oynamaz. */
+  min-width: 1.4em;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+.seg.active .seg__n { color: var(--accent-text); }
+/* Uc mod, her biri aciklayici bir etiket tasiyor: YATAY dizilince satira
+   sigmayip ikinci satira dusuyor ve ucuncu secenek yetim gorunuyordu.
+   Dikey liste hem sigar hem secim yapmasi kolaydir. */
+.segs--modes {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+.segs--modes .seg { justify-content: flex-start; min-height: 30px; }
+
+/* Kip icinde acilir liste dar kalmasin: uzun secenek metni kirpiliyordu. */
+.modal .row__control { width: 100%; max-width: 320px; }
+
+/* ============================================================
+   TABLO
+   ============================================================ */
+
+.panel {
+  position: relative;
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.grid { width: 100%; border-collapse: collapse; }
+
+.grid thead th {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--divider);
+  background: var(--surface-sunken);
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+}
+.grid tbody td {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--divider);
+  font-size: var(--fs-sm);
+  vertical-align: middle;
+}
+.grid tbody tr:last-child td { border-bottom: none; }
+.grid tbody tr:hover { background: var(--surface-hover); }
+.grid .text-right { text-align: right; }
+.grid__pick { width: 36px; }
+
+/* Sigmayan tablo KAYDIRILIR, kirpilmaz.
+   .panel overflow:hidden tasiyor - dogru karar, kose yuvarlatmasi icin
+   gerekli. Ama tablo icin bu, en sagdaki islem dugmelerinin erisilemez
+   olmasi demekti. Kaydirma sarmalayicisi ikisini birden veriyor. */
+.table-scroll {
+  overflow-x: auto;
+  /* Kaydirilan tablonun tabani: dar pencerede sutunlar birbirine
+     girmesin. */
+  min-width: 0;
+}
+/* Kaydirilan tablonun tabani: dar pencerede sutunlar birbirine girmesin.
+   900 -> 840: OLCULDU, icerigin gercek tabani 831px (islem yuvalari 104/104
+   yerine 80/92, ALAN ADI tabani 244 yerine 224). 900 artik icerikten GENIS
+   oldugu icin baglayici kisit haline gelmisti - yani tablo, ihtiyaci
+   olmadigi halde 69px daha zorluyor ve dar pencerede gereksiz yere
+   kaydiriyordu. */
+.table-scroll > .grid { min-width: 840px; }
+/* KURALLAR tablosu daha az sutunlu (5), o yuzden tabani da dusuk. Ayni 840
+   tabani ona uygulanirsa gereksiz yere kaydirir. */
+.table-scroll > .rules-table:not(.site-data-table) { min-width: 620px; }
+
+/* ALAN ADI sutunu. Alan adi bu tablonun ANAHTARI: kisaltmak da bolmek de
+   bilgi kaybettirir, o yuzden ARTAN yer once ona gider.
+   
+   `width: 100%` bunu tek basina yapar: otomatik yerlesimde bir sutuna %100
+   vermek "bos yeri sen al" demektir - diger sutunlar icerigine sikisir.
+   Tabani da 244 -> 224'e cekildi; olculdu, en genis icerik 181px idi, yani
+   63px ölü alan tutuluyordu. Tablo bu yuzden sigmadigi halde sutunda bosluk
+   goruluyordu (kullanici ekran goruntusuyle bildirdi). */
+.site-data-table th:nth-child(2),
+.site-data-table td:nth-child(2) { min-width: 224px; width: 100%; max-width: 0; }
+
+/* `max-width: 0` ters gorunur ama GEREKLI: otomatik yerlesimli bir tabloda
+   hucrenin ICERIGI sutunu genisletir, yani uzun bir alan adi tabloyu sisirip
+   yatay kaydirma uretir. max-width:0 icerigin bu baskisini keser - min-width
+   tabani zaten tutuyor - boylece sutun KABA gore olculur ve sigmayan ad
+   kesilir (bkz. .domain-code). Kesilen ad ipucunda tam haliyle durur.
+
+   KURALLAR tablosunda alan adi 1. sutun; o da ayni davranisi alir. */
+.rules-table:not(.site-data-table) th:nth-child(1),
+.rules-table:not(.site-data-table) td:nth-child(1) { min-width: 200px; width: 100%; max-width: 0; }
+
+/* ISLEMLER sutunu TABANI - `width:100%` ile birlikte ZORUNLU.
+   Bir sutuna %100 vermek digerlerini min-content'e sikistirir. Islem
+   hucresindeki izgara `auto 76px 88px`; ilk yuva `auto` oldugu icin baski
+   altinda min-content'e (tek kelime) kadar iner ve "Gecmisi sil" 18px'e
+   eziliyordu. Taban = 88 + 76 + 88 + 2x8 bosluk + 24 dolgu. */
+.site-data-table th:nth-child(8),
+.site-data-table td:nth-child(8) { min-width: 292px; }
+.site-checkbox { accent-color: var(--accent); }
+
+.empty { padding: var(--sp-7) var(--sp-4); text-align: center; }
+.empty__title { color: var(--text); font-size: var(--fs-sm); font-weight: 600; }
+.empty__desc {
+  display: block;
+  margin-top: var(--sp-1);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* ============================================================
+   ISTATISTIK
+   ============================================================ */
+
+.stat-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-4) 0 var(--sp-5);
+}
+.stat-hero-label {
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+/* Monospace DEGIL ve bu bilincli: tek basina duran sayida sabit genislik,
+   sayi ile birim arasini bir karakter genisligine acip "392   B" gibi
+   hatali okunan bir bosluk uretiyordu. */
+.stat-hero-num {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+}
+.stat-hero-note { color: var(--text-muted); font-size: var(--fs-sm); }
+/* Etiket ve sayi SIKI bir cift (sp-1). Aciklama farkli tur icerik; buyuk
+   rakamin hemen dibinde durunca ikisi tek blok gibi okunuyordu. */
+.stat-hero-num + .stat-hero-note { margin-top: var(--sp-1); }
+
+/* SABIT dort kolon. auto-fit dar pencerede 3 kolon uretip dorduncu kalemi
+   alt satira atiyor ve bos izgara hucreleri gap zeminini koca bir blok
+   olarak gosteriyordu. Kirilim de dordu TAM bolmeli. */
+.metric-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  background: var(--divider);
+  overflow: hidden;
+}
+.metric-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--surface);
+}
+.metric-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+.metric-label { color: var(--text-muted); font-size: var(--fs-sm); }
+
+.status-line {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+  /* Alt bosluk SART: hemen ardindan gelen bolum basligina yapisiyordu. */
+  margin-bottom: var(--sp-6);
+  font-size: var(--fs-sm);
+}
+.status-line-label { color: var(--text-muted); }
+.status-line-value { font-weight: 600; }
+.status-line.tone-good .status-line-value { color: var(--accent-text); }
+.status-line.tone-idle .status-line-value { color: var(--text-faint); }
+
+/* ============================================================
+   TESHIS (Sistem Durumu)
+   ============================================================ */
+
+.diag { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+.status-flags {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+.status-flag {
+  display: flex;
+  align-items: center;
+  /* flex-wrap SART: not ogesinin flex-basis:100% degeri sarma olmadan
+     islemiyor, not ayni satirda kaliyor ve etiketi ikiye boluyordu. */
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--divider);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  font-size: var(--fs-sm);
+}
+.status-flag-label { color: var(--text-muted); white-space: nowrap; }
+.status-flag-label + .status-flag-value { margin-left: var(--sp-3); }
+/* Durumu RENK degil DEGER soyler; renk yalnizca destek. */
+.status-flag-value { margin-left: auto; font-weight: 600; white-space: nowrap; }
+.status-flag-note {
+  flex-basis: 100%;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+}
+.status-flag.tone-good .status-flag-value { color: var(--accent-text); }
+.status-flag.tone-warn .status-flag-value { color: var(--warn); }
+.status-flag.tone-bad .status-flag-value { color: var(--danger); }
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--text-faint);
+}
+.tone-good .status-dot { background: var(--accent); }
+.tone-warn .status-dot { background: var(--warn); }
+.tone-bad .status-dot { background: var(--danger); }
+
+.status-meter { display: flex; gap: 2px; }
+.status-meter span {
+  width: 10px;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--divider);
+}
+.status-meter span.is-on { background: var(--accent); }
+
+.tech-drawer {
+  padding: var(--sp-3);
+  border: 1px solid var(--divider);
+  border-radius: var(--r-md);
+  background: var(--surface-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ============================================================
+   LOG KONSOLU
+   ============================================================ */
+
+.logbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-3);
+}
+.logbar__field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+.logbar__field .field { width: auto; }
+.logbar__note { color: var(--text-faint); font-size: var(--fs-caption); }
+
+/* SABIT yukseklik ve HER ZAMAN gorunur kaydirma olugu.
+   max-height kullanilirsa kart satir geldikce buyuyup sayfayi zipla tiyordu;
+   overflow:auto ise kaydirma cubugu gelip giderken YATAY kayma uretiyordu. */
+.log-console-card { position: relative; }
+.log-console-wrap {
+  height: 520px;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+/* Kolon genislikleri colgroup ile; table-layout:fixed olmadan tarayici
+   kolonlari HER satirda yeniden hesapliyor ve ayrinti acilip kapandikca
+   tablo kayiyordu. */
+.log-data-table { table-layout: fixed; }
+.col-log-time { width: 104px; }
+.col-log-level { width: 74px; }
+.col-log-domain { width: 190px; }
+.col-log-message { width: auto; }
+.col-log-expand { width: 36px; }
+
+.log-data-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.log-time { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-faint); }
+.log-cat {
+  margin-right: var(--sp-2);   /* bitisik yazilmasin: "SYSTEM3. taraf ..." */
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+}
+.log-text, .log-message { word-break: break-word; }
+
+/* Siralama numarasi: dar, tek genislikli, soluk.
+   Icerigi degil SIRAYI anlatiyor; alan adiyla ayni agirlikta olursa
+   goz once numaraya takilir. */
+.rank-head { width: 44px; }
+.rank-cell {
+  width: 44px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+
+/* Gunluk tablosunda ALAN ADI hucresi.
+   OLCULEN KUSUR: bu sinifin CSS karsiligi HIC yoktu (hayalet sinif). Tablo
+   `table-layout: fixed` oldugu icin uzun bir alan adi
+   (avatars.githubusercontent.com) 150px kolona sigmiyor ve yandaki "Olay"
+   sutununun UZERINE tasiyordu - kullanici ekran goruntusunde bildirdi.
+   Kolon 190px'e cikarildi; yine de sigmayanlar UC NOKTA ile kirpilir ve tam
+   degeri baslikta (title) durur. Gunluk konsolunda satir yuksekligi sabit
+   kalmali, bu yuzden sarma degil kirpma tercih edildi. */
+.log-domain {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Alan adina bagli OLMAYAN kayit (toplu supurme, periyodik alarm, kurulum).
+   ::before ile isaret basmiyoruz: logs.js metni ZATEN koyuyor. Eklendiginde
+   ikisi ust uste binip ekranda "——" cikmisti - kullanici bildirdi. Burada
+   yalnizca RENK var; icerik tek yerden gelir. */
+.log-domain-empty {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.log-row td { padding: var(--sp-2) var(--sp-3); }
+/* Ozgulluk BILEREK `.log-row td.log-expand-cell`: yalnizca `.log-expand-cell`
+   yazmak (0,0,1,0) govde kuralina (0,0,1,1) yeniliyor ve dolgu uygulanmiyordu. */
+.log-row td.log-expand-cell {
+  padding: 0 7px;          /* kolon 36, dugme 22: 36 - 2*7 = 22, tam sigar */
+  text-overflow: clip;     /* ikon dugmesi icin uc nokta anlamsiz */
+  overflow: hidden;
+}
+.log-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-sm);
+  color: var(--text-faint);
+}
+.log-expand-btn:hover { background: var(--surface-hover); color: var(--text); }
+
+.log-details-cell { padding: 0 var(--sp-3) var(--sp-3); }
+.log-details-pre {
+  margin: 0;
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--surface-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* `.log-lvl-*` SILINDI: eski isimlendirmeden kalma olu kurallardi, hicbir
+   kod uretmiyordu (JS `log-level-${level}` uretiyor). Isim degisiminde
+   ERROR/WARN'un `font-weight: 600` degeri kaybolmustu; asagidaki YASAYAN
+   `.log-level-*` kurallarina geri konuldu. */
+
+/* Bos durum KAPLAMA: akisin disinda. Tablonun YANINDA dursaydi bos->dolu
+   gecisinde konsol yuksekligi zipliyordu. */
+.log-empty-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+}
+.log-empty-overlay.hidden { display: none; }
+
+/* ============================================================
+   KIP (modal)
+   ============================================================ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  background: var(--scrim);
+}
+.overlay.hidden { display: none; }
+
+.modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow-y: auto;
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+.modal--confirm { max-width: 420px; padding: var(--sp-5); text-align: center; }
+
+.modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--divider);
+}
+.modal__title { font-size: var(--fs-md); font-weight: 600; word-break: break-all; }
+.modal__sub { margin-top: 2px; color: var(--text-muted); font-size: var(--fs-sm); }
+.modal__text { margin-top: var(--sp-2); color: var(--text-muted); font-size: var(--fs-sm); }
+.modal__body { padding: var(--sp-2) var(--sp-4) var(--sp-4); }
+.modal__section { margin-top: var(--sp-4); }
+.modal__section > * + * { margin-top: var(--sp-2); }
+.modal__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.modal__toolbar .hint { margin-bottom: 0; }
+.modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  border-top: 1px solid var(--divider);
+}
+.modal--confirm .modal__foot { border-top: none; padding: var(--sp-4) 0 0; }
+
+.cookielist {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--divider);
+  border-radius: var(--r-md);
+  background: var(--surface-sunken);
+}
+.cookielist__loading { padding: var(--sp-4); color: var(--text-muted); font-size: var(--fs-sm); text-align: center; }
+.cookie-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--divider);
+  font-size: var(--fs-sm);
+}
+.cookie-row:last-child { border-bottom: none; }
+.cookie-row input { accent-color: var(--accent); }
+
+/* ============================================================
+   BILDIRIM SERIDI
+   ============================================================ */
+
+.toast {
+  position: fixed;
+  right: var(--sp-5);
+  bottom: var(--sp-5);
+  z-index: 60;
+  max-width: 420px;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--divider);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  font-size: var(--fs-sm);
+}
+.toast.hidden { display: none; }
+
+/* ============================================================
+   TABLO ICI ROZET VE DUGMELER (JS ile uretilir)
+   ============================================================
+
+   DIKKAT: buradaki sinif adlari JS'in URETTIGI adlardir. CSS'te karsiligi
+   olmayan bir sinif ("hayalet sinif") ogeyi CIPLAK birakir: <button> reset
+   yuzunden duz metin gibi gorunur, kap display:block kalir ve cocuklar
+   sikisir. Kullanicinin bildirdigi iki kusur tam olarak buydu -
+   .rule-actions-wrap ve .badge-scope-interactive tanimsizdi.
+   Koruma: test/integrity.test.js "hayalet sinif" testi.
+   ============================================================ */
+
+/* ---------- Rozetler ---------- */
+
+.badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: 20px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.tag-white { background: var(--accent-soft); color: var(--accent-text); }
+.tag-grey { background: var(--warn-soft); color: var(--warn); }
+.tag-temp { background: var(--info-soft); color: var(--info); }
+.tag-blue { background: var(--info-soft); color: var(--info); }
+
+/* Alan adi: tek genislikli, satirda kirilabilir. */
+.domain-cell,
+.domain-code {
+  display: block;
+  font-family: var(--font-mono);
+  /* KESILIR, BOLUNMEZ. `break-all` uzun adi ikiye bolup satiri yukseltiyordu;
+     bolmemek ise tabloyu sisirip yatay kaydirma uretiyordu. Ucuncu yol: tek
+     satirda kes, tam adi ipucunda ver - tablo sabit kalir, bilgi kaybolmaz. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Kapsam dugmesi (TIKLANABILIR) ----------
+   Kullanici "tiklanabilir mi belli degil" dedi ve haklıydi: sinif tanimsiz
+   oldugu icin dugme zeminle ayni renkte duz metin gorunuyordu. Artik
+   cerceveli, imleci isaretci ve uzerine gelince belirginlesiyor. */
+
+.badge-scope-interactive {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  min-height: 24px;
+  padding: 0 var(--sp-2);
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease),
+              border-color var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease);
+}
+.badge-scope-interactive:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--text-faint);
+  color: var(--text);
+}
+.badge-scope-interactive:disabled { opacity: .5; cursor: progress; }
+.badge-scope-interactive .gt-icon svg,
+.badge-scope-interactive .icon-wrap svg { width: 12px; height: 12px; }
+
+/* Kapsam DURUMU renkle de anlatilir: kapsayan = vurgu, dar = notr. */
+.badge-scope-interactive.scope-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.badge-scope-interactive.scope-subdomain,
+.badge-scope-interactive.scope-inactive { color: var(--text-muted); }
+
+/* ---------- Satir eylemleri ----------
+   .rule-actions-wrap ve .btn-action-group JS'in urettigi KAPLAR. Yerlesim
+   kurali olmadan display:block kaliyor ve dugmeler ic ice giriyordu. */
+
+/* .btn-action-group BU LISTEDE DEGIL: asagida kendi izgara tanimi var ve
+   buradaki flex hicbir zaman uygulanmiyordu (ayni dosyada ikinci tanim
+   eziyordu). Olu kural yaniltir - okuyan "flex" sanir. */
+.row-actions,
+.rule-actions-wrap {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+.btn-edit-rule,
+.btn-delete-rule,
+.btn-purge-site,
+.btn-purge-history,
+.btn-toggle-whitelist-site,
+.btn-danger-sm,
+.btn-warning-sm,
+.btn-success-sm {
+  display: inline-flex;
+  align-items: center;
+  /* ORTALA + ASGARI GENISLIK: dugmeler metne gore buyuyordu ve islem sutunu
+     tirtikli duruyordu ("Kaldir" dar, "Beyaz liste" genis). Asgari genislik
+     satirlari hizalar; daha uzun bir etiket (Ingilizce "Delete history")
+     yine de sigar cunku bu bir TAVAN degil TABAN. */
+  justify-content: center;
+  /* TABAN YUVADA, DUGMEDE DEGIL. Burada 104px vardi; .btn-action-group
+     yuvalari 80/92'ye indirilince dugmeler yuvadan TASTI ve yuvayi daraltmak
+     gorunurde hicbir sey degistirmedi (kullanici bildirdi). Dugme artik
+     yuvasini doldurur, hizalama yuvadan gelir. */
+  min-width: 0;
+  /* `width: 100%` VERILMEZ. Izgara ogeleri zaten varsayilan olarak yuvasini
+     doldurur (justify-self: stretch). %100 vermek ILK yuvayi bozuyordu: o
+     yuva `auto`, yani icerige gore olculur - %100 genislik icerik olcusunu
+     sifirladigi icin "Gecmisi sil" 18px'e eziliyordu. */
+  gap: var(--sp-1);
+  /* 26px gorsel, ama dokunma alani icin dikey dolgu da var. */
+  min-height: 26px;
+  padding: 0 var(--sp-2);
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease),
+              border-color var(--t-fast) var(--ease);
+}
+.btn-edit-rule .gt-icon svg, .btn-edit-rule .icon-wrap svg,
+.btn-delete-rule .icon-wrap svg, .btn-purge-site .icon-wrap svg,
+.btn-purge-history .icon-wrap svg, .btn-toggle-whitelist-site .icon-wrap svg,
+.btn-danger-sm .icon-wrap svg, .btn-warning-sm .icon-wrap svg,
+.btn-success-sm .icon-wrap svg { width: 12px; height: 12px; }
+
+/* EYLEM TURU RENKLE ayirt edilir: yikici kirmizi, koruyucu yesil,
+   kismi/uyarili amber, notr gri. Kullanici "neyin ne oldugunu anlamali". */
+.btn-delete-rule,
+.btn-purge-site,
+.btn-danger-sm { color: var(--danger); border-color: var(--danger-border); }
+.btn-delete-rule:hover,
+.btn-purge-site:hover,
+.btn-danger-sm:hover { background: var(--danger-soft); border-color: var(--danger); }
+
+.btn-purge-history,
+.btn-warning-sm { color: var(--warn); border-color: var(--warn-border); }
+.btn-purge-history:hover,
+.btn-warning-sm:hover { background: var(--warn-soft); border-color: var(--warn); }
+
+.btn-toggle-whitelist-site.btn-success-sm,
+.btn-success-sm { color: var(--accent-text); border-color: var(--accent-border); }
+.btn-success-sm:hover { background: var(--accent-soft); border-color: var(--accent); }
+
+.btn-edit-rule:hover { background: var(--surface-hover); border-color: var(--text-faint); }
+
+/* ---------- Cerez kalkani (kip icindeki secim) ---------- */
+
+.btn-cookie-shield {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.btn-cookie-shield:hover { background: var(--surface-hover); color: var(--text); }
+.btn-cookie-shield.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+/* ---------- Sayim hucreleri ---------- */
+
+.cell-center { text-align: center; }
+.trace-empty { color: var(--text-faint); }
+.trace-count-badge {
+  display: inline-block;
+  min-width: 24px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm);
+  color: var(--text);
+}
+.trace-count-badge.is-zero { color: var(--text-faint); }
+.parent-site-hint {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-faint);
+  font-size: var(--fs-caption);
+  /* `break-all` DEGIL. Bu bir VIRGULLU LISTE; break-all satiri doldugu yerden
+     keser ve "internetdownloadmanager.c / om" gibi bir sey uretir (kullanici
+     ekran goruntusuyle bildirdi). `break-word` once oge sinirindan sarar,
+     yalnizca TEK basina sigmayan bir alan adini boler. */
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+.item-checkbox { accent-color: var(--accent); }
+
+/* ---------- Kip: cerez listesi ---------- */
+
+.cookie-list-empty,
+.cookie-list-loading,
+.cookielist__loading {
+  padding: var(--sp-4);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+.cookie-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+.cookie-row-name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cookie-row-meta { color: var(--text-faint); font-size: var(--fs-caption); }
+.cookie-tag,
+.cookie-row-tag {
+  flex: none;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Teshis: teknik cekmece ---------- */
+
+.tech-wrap { display: flex; flex-direction: column; gap: var(--sp-2); }
+.tech-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  align-self: flex-start;
+  min-height: 28px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.tech-toggle:hover { background: var(--surface-hover); color: var(--text); }
+.tech-toggle .icon-wrap svg { width: 12px; height: 12px; transition: transform var(--t-base) var(--ease); }
+.tech-toggle.is-open .icon-wrap svg { transform: rotate(90deg); }
+.tech-item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 2px 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+}
+
+/* ---------- Log satirlari ---------- */
+
+.log-level {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+.log-level-INFO { color: var(--text-muted); }
+.log-level-SUCCESS { color: var(--accent-text); }
+.log-level-WARN { color: var(--warn); font-weight: 600; }
+.log-level-ERROR { color: var(--danger); font-weight: 600; }
+.log-details-row td { border-bottom: 1px solid var(--divider); }
+.log-details-row.hidden { display: none; }
+/* Hata satirini bulmak icin goz gezdirmek yerine sol cizgi. */
+.log-row-ERROR td:first-child { box-shadow: inset 2px 0 0 var(--danger); }
+.log-row-WARN td:first-child { box-shadow: inset 2px 0 0 var(--warn); }
+
+/* ---------- Ortak durum siniflari ---------- */
+
+.icon-wrap { display: inline-flex; align-items: center; flex: none; }
+.icon-wrap svg { width: var(--icon-sm); height: var(--icon-sm); stroke-width: 1.75; }
+.setting-warning {
+  display: block;
+  margin-top: 2px;
+  color: var(--warn);
+  font-size: var(--fs-caption);
+}
+.disabled-protected { opacity: .45; pointer-events: none; }
+.is-zero { color: var(--text-faint); }
+.is-expanded { /* satir genisletildi; gorsel isaret ikon donusunde */ }
+.hidden { display: none !important; }
+
+/* ============================================================
+   DUYARLILIK
+   ============================================================ */
+
+@media (max-width: 1000px) {
+  .shell { grid-template-columns: 64px minmax(0, 1fr); }
+  .shell::before { width: 64px; }
+  .side { padding: var(--sp-3) var(--sp-2); }
+  .side__name, .side__ver { display: none; }
+  .side__brand { justify-content: center; padding-bottom: var(--sp-4); }
+  .nav-item { justify-content: center; padding: 0; }
+  .nav-item > span:not(.gt-icon) { display: none; }
+  .main { padding: var(--sp-5) var(--sp-4) var(--sp-6); }
+}
+
+@media (max-width: 720px) {
+  /* 2 kolon: dordu TAM boler, bos izgara hucresi olusmaz. */
+  .metric-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .status-flags { grid-template-columns: minmax(0, 1fr); }
+  .head { flex-direction: column; align-items: stretch; }
+  .head__actions, .header-tools { justify-content: flex-start; }
+  .row__control { width: 100%; }
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+}
+
+
+/* Islem sutunu: UC SABIT YUVA.
+   Esnek yerlesimde satirlar birbirini tutmuyordu - bir satirda "Gecmisi sil"
+   var, otekinde yok; ortada bazen dar bir "Korumali" etiketi, bazen 104px
+   "Temizle" dugmesi. Sabit izgara her satirda ayni sutunlari verir. */
+.btn-action-group {
+  display: grid;
+  /* ILK yuva "auto": "Gecmisi sil" YALNIZCA beyaz listedeki ve gecmisi olan
+     sitelerde cikar. Sabit 104px iken her satir olmayan bir dugme icin yer
+     ayiriyordu ve islem sutunu 352px'e (tablonun ucte biri) ciakiyordu -
+     alan adi sutunu 203px'e sikisip "internetdownloadmanager.com" ikiye
+     boluyordu (kullanici bildirdi).
+     Bos yuva artik 0 genislik. Izgara SAGA yaslandigi icin her satirda
+     SAGDAKI iki dugme yine ayni eksende; yalnizca nadir gecmis dugmesi
+     sola tasar.
+
+     SABIT genislik SART: hizalama satir satir degil SUTUN boyunca olmali,
+     max-content her satirda farkli olcer ve dugmeler kayar.
+     Ama degerler OLCULDU, tahmin edilmedi (tr, en genis dil):
+       yuva 2  "Temizle" 71px / "Korumali" 55px  -> 80px
+       yuva 3  "Beyaz liste" 88px / "Kaldir" 61px -> 92px
+     Ikisi de 104px'ti; islem sutunu 336px tutuyordu ve tablonun sert tabanini
+     1031px'e cikaran en buyuk kalem oydu - ALAN ADI'ndan (244) daha genis. */
+  grid-template-columns: auto 76px 88px;
+  /* GAP BURADA OLMAK ZORUNDA. Eskiden yukaridaki flex blogundan geliyordu;
+     o bloktan bu selektoru cikarinca bosluk da gitti ve dugmeler yapisik
+     kaldi (kullanici bildirdi). Ikinci tanim yalnizca `display`i eziyordu,
+     `gap`i degil - yani kural tamamen olu degildi. */
+  gap: var(--sp-2);
+  justify-content: end;
+  justify-items: stretch;
+  align-items: center;
+}
+.act-slot-empty { display: block; }
+/* Korumali etiketi dugme degil ama YUVASINI doldurmali; ortalaninca ust ve
+   alt satirlardaki dugmelerle ayni eksende durur. */
+.btn-action-group .tag-protected {
+  justify-self: center;
+}
+
+
+/* Bildirimdeki GERI AL dugmesi. Metinden ayrisan ama baskin olmayan bir
+   vurgu: islem zaten yapildi, bu bir cikis yolu - asil eylem degil. */
+.toast__undo {
+  margin-left: var(--sp-3);
+  padding: 2px var(--sp-2);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--accent-text);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  cursor: pointer;
+}
+.toast__undo:hover { background: var(--accent-soft); }
+
+/* ============================================================
+   HAKKINDA SEKMESI
+   ============================================================ */
+
+/* Sirali adimlar: numara METINDEN AYRI bir sutunda dursun ki uzun aciklama
+   ikinci satira kayinca numaranin altina girmesin. */
+.about-steps {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: about-step;
+}
+.about-steps li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: var(--sp-3);
+  align-items: start;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+.about-steps li::before {
+  counter-increment: about-step;
+  content: counter(about-step);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface-sunken);
+  color: var(--text);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+/* Baslik ve aciklama IKI AYRI grid ogesi. Acikca 2. sutuna sabitlenmezlerse
+   otomatik yerlesim aciklamayi bir sonraki satirin 1. sutununa (22px'lik
+   numara sutunu) koyuyor ve metin kelime kelime alt alta diziliyordu. */
+.about-steps li > * { grid-column: 2; }
+.about-steps strong { display: block; color: var(--text); font-weight: 600; }
+
+/* Madde listesi. Isaret olarak nokta degil KISA CIZGI: yesil bir onay
+   isareti "bu yapiliyor" der, oysa ayni bicim sinirlar bolumunde de
+   kullaniliyor - orada yanlis anlam olurdu. */
+.about-facts {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.about-facts li {
+  position: relative;
+  padding-left: var(--sp-4);
+  max-width: 78ch;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+.about-facts li::before {
+  content: "";
+  position: absolute;
+  top: .62em;
+  left: 0;
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+.about-facts--limit li::before { background: var(--text-faint); }
+
+.about-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+}
+.about-foot__name { color: var(--text); font-weight: 600; }
+.about-foot__ver { color: var(--text-muted); font-size: var(--fs-sm); }
+.about-foot__note { color: var(--text-faint); font-size: var(--fs-sm); }

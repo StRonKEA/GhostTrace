@@ -1,0 +1,442 @@
+/* GhostTrace - paylasilan tema katmani (options + popup).
+ *
+ * Tasarim ilkesi: hiyerarsiyi KUTU degil YAZI ve BOSLUK kurar. Onceki arayuz
+ * her grubu kenarlikli bir karta koyuyordu; dokuz kart yan yana gelince
+ * hicbiri one cikmiyordu. Burada kart yalnizca gercekten liste/tablo olan
+ * icerik icin var.
+ *
+ * Renk: tek kromatik vurgu (yesil = korunuyor). Kirmizi yalnizca yikici
+ * eylem, amber yalnizca uyari. Mor/mavi parilti yok, gradyan yok.
+ *
+ * KONTRAST OLCULDU. Her metin cifti >= 4.5:1, her kontrol siniri >= 4.5:1
+ * degil >= 3:1 (WCAG 1.4.11). Dekoratif ayirici bu kapsamda degildir ve
+ * bilerek dusuk kontrastlidir. Olcum: test/theme-contrast.test.js
+ *
+ * ZEMIN LISTESI TAM OLMALI. --text-faint bir sure yalnizca --surface ve --bg
+ * uzerinde test ediliyordu; --surface-sunken (tablo basligi, segment sayaci)
+ * listede yoktu ve o zeminde 4.32:1 kaliyordu - test yesil, arayuz ihlalli.
+ * Yeni bir zemin belirteci eklerken metin ciftini de teste ekle.
+ */
+
+/* ============================================================
+   BELIRTECLER
+   ============================================================ */
+
+:root {
+  /* --- ACIK TEMA (varsayilan tanim) --- */
+  --bg:              #F6F7F9;   /* tuval */
+  --surface:         #FFFFFF;   /* kart / satir yuzeyi */
+  --surface-sunken:  #F1F2F5;   /* girinti: arama alani, tablo basligi */
+  --surface-hover:   #F1F3F6;
+
+  --text:            #1A1D23;   /* govde */
+  --text-muted:      #5A616E;   /* ikincil */
+  --text-faint:      #666E7C;   /* etiket / ust yazi - sunken zeminde de >= 4.5 */
+
+  --divider:         #E3E6EA;   /* dekoratif ayirici (dusuk kontrast BILINCLI) */
+  /* Kontrol siniri. Onceki deger (#8D8F95) yalnizca beyaz ve tuval icin
+     ayarlanmisti: 3.23 ve 3.02 - ikincisi 0.02 payla geciyordu ve girintili
+     zeminde 2.89 ile DUSUYORDU. Simdi ucu de rahat geciyor (3.50/3.26/3.12). */
+  --control-border:  #87898F;
+
+  --accent:          #0B7340;   /* korunuyor / acik */
+  --accent-text:     #0B7340;
+  --accent-on:       #FFFFFF;
+  --accent-soft:     #E7F4ED;
+
+  --danger:          #C42B2B;
+  --danger-on:       #FFFFFF;
+  --danger-soft:     #FBEAEA;
+
+  --warn:            #8A5A00;
+  --warn-soft:       #FDF3E0;
+
+  --info:            #1F5FBF;
+  --info-soft:       #E8F0FC;
+  --accent-border:   #7FB79A;
+  --scrim:           rgba(8, 10, 14, .62);
+  --danger-border:   #DFA3A3;
+  --warn-border:     #D6BA82;
+
+  --focus:           #1B6EF3;
+
+  --shadow-sm: 0 1px 2px rgba(16, 20, 28, .06);
+  --shadow-md: 0 4px 16px rgba(16, 20, 28, .10);
+
+  /* --- OLCU --- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px;
+
+  --r-sm: 4px;  --r-md: 6px;  --r-lg: 10px;  --r-full: 999px;
+
+  /* Govde 14px. Chrome'un kendi ayarlari 13px kullanir; 14 hem oradan
+     okunakli hem de 12px alt sinirinin guvenli tarafinda. */
+  /* 9 - YALNIZCA popup'taki dort sutunlu sayac tablosunun alt yazisi.
+     Olcegin en altinda ve BILINCLI olarak dar kapsamli.
+     GEREKCE: hucrede ikon USTTE duruyor ve altindaki iki satirin (etiket +
+     deger) toplam yuksekligi ikonla TAM AYNI olsun isteniyor. Olculdu:
+       etiket  9 / deger 13 -> metin blogu 34px = ikon 34px   <-- secilen
+       etiket 11 / deger 15 -> metin blogu 40px, ikon 34px'te kalir (esitlik bozulur)
+     Yani bu deger bir sikismanin degil bir ORANIN sonucu.
+     Baska hicbir yerde kullanilmaz; genel bir kucuk-yazi olcusu DEGIL. */
+  --fs-micro:   0.5625rem;  /* 9 */
+  --fs-caption: 0.6875rem;  /* 11 - yalnizca UST YAZI etiketleri */
+  --fs-mini:    0.75rem;    /* 12 - YOGUN yuzey (popup) ikincil metni.
+                               Popup 360px ve ayarlar sayfasindan sik. Bes
+                               yerde 11.5px yaziyordu: olcekte olmayan bir
+                               deger, yani her biri ayri karar. Adim buraya
+                               kondu ki karar TEK yerde olsun. */
+  --fs-sm:      0.8125rem;  /* 13 */
+  --fs-body:    0.875rem;   /* 14 */
+  --fs-md:      0.9375rem;  /* 15 - bolum basligi */
+  --fs-lg:      1.25rem;    /* 20 - sayfa basligi */
+  --fs-xl:      1.75rem;    /* 28 - tek buyuk sayi */
+
+  --lh-tight: 1.3;
+  --lh-body:  1.5;
+
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", "SF Mono",
+               Consolas, "Liberation Mono", monospace;
+
+  --icon-sm: 14px;  --icon-md: 16px;  --icon-lg: 20px;
+
+  /* Tek bir sure her gecise kopyalanmaz: mesafeye gore ayrilir. */
+  --t-fast: 120ms;   /* renk / opaklik */
+  --t-base: 180ms;   /* kucuk hareket */
+  --t-slow: 240ms;   /* acilip kapanan panel */
+  --ease: cubic-bezier(.2, 0, .2, 1);
+
+  color-scheme: light;
+}
+
+/* Sistem koyu tema - kullanici ACIK'a sabitlememisse */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:              #0F1115;
+    --surface:         #16181D;
+    --surface-sunken:  #101318;
+    --surface-hover:   #1C1F26;
+
+    --text:            #E6E8EC;
+    --text-muted:      #9BA1AC;
+    --text-faint:      #7C838F;
+
+    --divider:         #2A2E37;
+    --control-border:  #62646B;
+
+    --accent:          #3DD68C;
+    --accent-text:     #3DD68C;
+    --accent-on:       #0B1410;
+    --accent-soft:     #12271D;
+
+    --danger:          #FF6B6B;
+    --danger-on:       #1A0B0B;
+    --danger-soft:     #2A1516;
+
+    --warn:            #F0B429;
+    --warn-soft:       #2A2113;
+
+    --info:            #7FB2F0;
+    --info-soft:       #16233A;
+    --accent-border:   #2E6B4C;
+    --scrim:           rgba(0, 0, 0, .72);
+    --danger-border:   #6B3232;
+    --warn-border:     #5C4820;
+
+    --focus:           #5AA9FF;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .40);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, .50);
+
+    color-scheme: dark;
+  }
+}
+
+/* Kullanici KOYU'ya sabitlediyse - sistem ne derse desin */
+:root[data-theme="dark"] {
+  --bg:              #0F1115;
+  --surface:         #16181D;
+  --surface-sunken:  #101318;
+  --surface-hover:   #1C1F26;
+
+  --text:            #E6E8EC;
+  --text-muted:      #9BA1AC;
+  --text-faint:      #7C838F;
+
+  --divider:         #2A2E37;
+  --control-border:  #62646B;
+
+  --accent:          #3DD68C;
+  --accent-text:     #3DD68C;
+  --accent-on:       #0B1410;
+  --accent-soft:     #12271D;
+
+  --danger:          #FF6B6B;
+  --danger-on:       #1A0B0B;
+  --danger-soft:     #2A1516;
+
+  --warn:            #F0B429;
+  --warn-soft:       #2A2113;
+
+  --info:            #7FB2F0;
+  --info-soft:       #16233A;
+  --accent-border:   #2E6B4C;
+  --scrim:           rgba(0, 0, 0, .72);
+  --danger-border:   #6B3232;
+  --warn-border:     #5C4820;
+
+  --focus:           #5AA9FF;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .40);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, .50);
+
+  color-scheme: dark;
+}
+
+/* ============================================================
+   SIFIRLAMA
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, p, figure { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button { cursor: pointer; background: none; border: none; padding: 0; }
+button:disabled { cursor: not-allowed; }
+
+a { color: var(--accent-text); }
+
+/* Odak: fare tiklamasinda degil KLAVYEDE gorunur. Halkayi kaldirmak
+   klavyeyle gezen kullaniciyi kor eder. */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+::placeholder { color: var(--text-faint); opacity: 1; }
+
+/* ============================================================
+   ORTAK ILKELLER
+   ============================================================ */
+
+.gt-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+.gt-icon svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  stroke-width: 1.75;   /* tek katman = tek kalinlik */
+}
+.gt-icon--sm svg { width: var(--icon-sm); height: var(--icon-sm); }
+.gt-icon--lg svg { width: var(--icon-lg); height: var(--icon-lg); }
+
+/* --- Butonlar --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 32px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background var(--t-fast) var(--ease),
+              border-color var(--t-fast) var(--ease);
+}
+.btn:hover:not(:disabled) { background: var(--surface-hover); }
+.btn:disabled { opacity: .5; }
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-on);
+}
+.btn--primary:hover:not(:disabled) { filter: brightness(1.08); background: var(--accent); }
+
+.btn--danger {
+  background: transparent;
+  border-color: var(--control-border);
+  color: var(--danger);
+}
+.btn--danger:hover:not(:disabled) { background: var(--danger-soft); border-color: var(--danger); }
+
+/* DOLU tehlike: yalnizca YIKICI islemi ONAYLAYAN dugme.
+   Cerceveli .btn--danger TETIKLEYICIDIR ("temizle" der, henuz silmez);
+   dolu olan KARARDIR. Ayrim bilincli - ayni ekranda ikisi arka arkaya
+   gelir ve ayni gorunselerdi hangisinin geri donusu olmadigi anlasilmazdi.
+   Onay penceresi ile popup onayi ARTIK bu tek tanimi paylasiyor; eskiden
+   biri dolu digeri cerceveliydi. */
+.btn--danger-solid {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--danger-on);
+  font-weight: 600;
+}
+.btn--danger-solid:hover:not(:disabled) { filter: brightness(1.08); background: var(--danger); }
+
+.btn--quiet { border-color: transparent; background: transparent; }
+.btn--quiet:hover:not(:disabled) { background: var(--surface-hover); }
+
+/* Ikon-only dugme: gorsel 16px olsa da DOKUNMA ALANI 32px. Erisilebilir
+   ad zorunlu - aria-label'siz ikon dugme ekran okuyucuda isimsizdir. */
+.btn--icon {
+  width: 32px;
+  min-height: 32px;
+  padding: 0;
+  justify-content: center;
+}
+
+/* --- Alanlar --- */
+.field {
+  width: 100%;
+  min-height: 32px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+.field:hover { border-color: var(--text-faint); }
+
+select.field {
+  padding-right: var(--sp-5);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666E7C' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--sp-2) center;
+  background-size: 14px;
+}
+:root[data-theme="dark"] select.field,
+:root:not([data-theme="light"]) select.field {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237C838F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
+/* --- Anahtar (toggle) --- */
+.switch {
+  position: relative;
+  flex: none;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+.switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.switch input:disabled { cursor: not-allowed; }
+
+.switch__track {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-full);
+  background: var(--surface-sunken);
+  transition: background var(--t-base) var(--ease),
+              border-color var(--t-base) var(--ease);
+  pointer-events: none;
+}
+.switch__track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-faint);
+  transition: transform var(--t-base) var(--ease),
+              background var(--t-base) var(--ease);
+}
+.switch input:checked + .switch__track {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.switch input:checked + .switch__track::after {
+  transform: translateX(16px);
+  background: var(--accent-on);
+}
+.switch input:focus-visible + .switch__track {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.switch input:disabled + .switch__track { opacity: .45; }
+
+/* --- Rozet --- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: 20px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.tag--on     { background: var(--accent-soft); color: var(--accent-text); }
+.tag--danger { background: var(--danger-soft); color: var(--danger); }
+.tag--warn   { background: var(--warn-soft);   color: var(--warn); }
+
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* Yalnizca ekran okuyucu icin */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================
+   HAREKET
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,424 @@
+/* GhostTrace - popup.
+ *
+ * Belirtecler ../ui/theme.css icinde.
+ *
+ * Onceki surumde en buyuk oge MARKA idi: parildayan yuvarlak maskot, ad ve
+ * slogan popup'in ustunu kapliyordu. Popup'ta asil konu ACIK OLAN SITE ve
+ * onun korunup korunmadigi. Hiyerarsi buna gore kuruldu.
+ */
+
+body {
+  /* 360: yaygin ust sinir. 400'de bazi pencerelerde sag kenar kirpiliyor. */
+  width: 360px;
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+/* ---------- Ust serit ---------- */
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+/* Gercek eklenti ikonu; PNG renk devralmadigi icin `color` yok. */
+.top__mark { display: inline-flex; align-items: center; }
+.top__mark img { width: 16px; height: 16px; object-fit: contain; }
+.top__name {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: -.01em;
+}
+.top__cog { margin-left: auto; }
+
+/* ---------- Ana anahtar ---------- */
+
+.master {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  /* 8px -> 6px: korumali durum 600px sinirina 3px kalmisti. Bu satir en az
+     dikkat isteyen oge oldugu icin pay buradan alindi. */
+  padding: 6px var(--sp-3);
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.master__label {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+.master .switch { margin-left: auto; }
+#delayBadge:empty { display: none; }
+
+/* ---------- Site (asil konu) ---------- */
+
+.site {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.site.hidden { display: none; }
+
+/* Alan adi POPUP'IN KAHRAMANI: kendi satirini alir, rozet altina gecer.
+   Onceden ikisi yan yanaydi ve "Sekme Kapanınca Temizlenecek" gibi uzun bir
+   rozet alan adini sikistirip kelime ortasindan boluyordu
+   ("forum.mobilism." / "org"). */
+.site__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.site__name {
+  min-width: 0;
+  flex: 1 1 100%;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  /* Uzun alan adi popup'i genisletemez. `anywhere`, `break-all`in aksine
+     once DOGAL noktalari (nokta, tire) dener; okunakli kalir. */
+  overflow-wrap: anywhere;
+  line-height: var(--lh-tight);
+}
+
+/* Durum rozeti. Renk TEK tasiyici degil: rozetin metni de durumu soyluyor. */
+.site__status {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 20px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-white { background: var(--accent-soft); color: var(--accent-text); }
+.badge-grey { background: var(--warn-soft); color: var(--warn); }
+.badge-temp { background: var(--warn-soft); color: var(--warn); }
+.badge-default { background: var(--surface-sunken); color: var(--text-muted); }
+
+/* ---------- Olcumler ---------- */
+
+.metrics {
+  display: grid;
+  /* DORT SUTUN, tek satir. 2x2 denendi ve geri alindi: yan yana istendi. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: var(--sp-1);
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  background: var(--divider);
+  overflow: hidden;
+}
+/* Hucre yerlesimi: IKON USTTE, altinda etiket ve sayi - hepsi ortali.
+   Ikon SOLDA denendi ve GERI ALINDI: yatay yeri paylastigi icin buyuyemiyordu.
+   Olculen sinir yan yana dizilimde ikon 26px'ti - 28px'te ingilizce
+   "Downloads" etiketi sikisiyordu (44px istiyor, 42px kaliyor). Ustte
+   duran ikon yatay yer icin YARISMIYOR: 34px olabiliyor, yani metin
+   blogunun tam boyu, ve etiket hucrenin tamamini kullaniyor.
+   Bedeli DIKEY: korumali durum 524 -> 561px (600 sinirinin altinda). */
+.metric {
+  display: flex;
+  flex-direction: column;
+  /* ORTALI. Yan yana dizilimde icerik sola yapisikti ve hucreler esit 76px
+     oldugu halde icerik genisligi degisiyordu; sagda kalan bosluk her
+     hucrede baskaydi (olculdu, TR: 22/15/14/17px) ve dort grup dort ayri
+     yerde duruyordu - "duzensiz" gorunen sey buydu. */
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 2px;
+  background: var(--surface);
+}
+.metric-ic {
+  display: inline-flex;
+  flex: none;
+  color: var(--text-faint);
+}
+/* 34px: metin blogunun TAM boyu. Yan yana dizilimde 26px'te tikanmisti;
+   ikon ustte durdugu icin yatay sinir kalkti. */
+.metric-ic svg { width: 34px; height: 34px; }
+.metric-txt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 0;
+}
+.metric-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+/* fs-micro (9). Gerekcesi ui/theme.css'te yazili. NOT: o gerekce YAN YANA
+   dizilim icindi (ikona yatay yer acmak); ikon ustte durdugu icin yatay
+   sinir kalkti ve etiket fs-caption'a (11) donebilir. Olculmeden
+   degistirilmedi. */
+.metric-name { color: var(--text-muted); font-size: var(--fs-micro); }
+.metric-value.is-zero { color: var(--text-faint); }
+
+/* 3. taraf sayisi SOLUK DEGIL - denendi ve geri alindi.
+   Sayi sitenin verisi degil, o yuzden bir tik geride durmasi mantikli
+   gorunuyordu. Ama bu arayuzde SOLUK SAYI zaten baska bir sey soyluyor:
+   `.metric-value.is-zero`, `.trace-count-badge.is-zero` ve options'taki
+   `.is-zero`, ucu de --text-faint ile "burada hicbir sey yok" demek.
+   Ayrimi renkle anlatmak o anlamla carpisiyordu: 81 gibi dolu bir sayi
+   sifir gibi okunuyordu, cunku koyu temada --text-muted ile --text-faint
+   birbirine cok yakin (degerler ui/theme.css icinde). Ayrimi artik ETIKET
+   ("3. taraf") ve KURE IKONU tasiyor; sayi digerleriyle ayni guclukte
+   okunuyor. */
+
+/* ---------- Bilgi kartlari ---------- */
+
+.notice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  padding: var(--sp-3);
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.notice.hidden { display: none; }
+.notice__title { font-size: var(--fs-sm); font-weight: 600; }
+.notice__text { color: var(--text-muted); font-size: var(--fs-sm); }
+
+/* ---------- Eylemler ---------- */
+
+.acts {
+  /* D tasariminda cocuklar ALT ALTA. Eski iki-kolonlu grid onlari yan yana
+     diziyor, sure seridini tasiriyor ve "Bu site icin ne yapilsin?" sorusunu
+     kartlarin soluna itiyordu. */
+  display: block;
+}
+.acts.hidden { display: none; }
+/* Temizle satiri iki kolonu da kaplar: yikici eylem KENDI satirinda durur,
+   koruyucu eylemlerle yan yana gelip yanlislikla tiklanmaz. */
+
+/* Kapsam acilir menusu KALDIRILDI (v2.7.0): yerine sure seridiyle ayni
+   desende iki dugmelik bir serit geldi (bkz. .durseg--scope). Menuye ait
+   .acts__slot / .acts__btn / .chev / .menu* / .scope* / .snooze-cancel
+   kurallari onunla birlikte oldu ve silindi - okuyan birine hala bir menu
+   varmis gibi gorunuyorlardi. */
+
+/* ---------- Bildirim ---------- */
+
+.enotice {
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--r-lg);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+.enotice.hidden { display: none; }
+
+.hidden { display: none !important; }
+
+/* ==========================================================================
+   D TASARIMI  (kullanici onayi: B'nin iki secimi + C'nin veri tablosu)
+   ========================================================================== */
+
+/* --- Site kimligi + veri --- */
+.site__lbl {
+  margin: 0;
+  /* rem tabanli token: sabit 11px kullanicinin yazi boyutu ayarini
+     TAKMIYORDU (WCAG 1.4.4). Olculdu: kok 20px'te digerleri buyurken
+     bu ikisi 11px'te kaliyordu. */
+  font-size: var(--fs-caption);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+/* --- Karar --- */
+.acts__q {
+  margin: var(--sp-2) 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.picks { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
+
+.pick {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  text-align: left;
+  padding: var(--sp-2);
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  cursor: pointer;
+}
+.pick:hover { border-color: var(--text-faint); }
+.pick__ic { color: var(--text-faint); }
+/* Iki satir metnin yuksekligine yakin: metin blogu 36px, ikon 30px.
+   30 SINIRIN KENDISI, olculdu: 32px'te ingilizce "When the tab closes"
+   iki satira sariyor, kart 54 -> 70px cikiyor ve panel 587px oluyor
+   (Chrome 600px'te kaydirma cubugu uretiyor, yani 13px pay kaliyor).
+   30px'te iki dil de 572px ve sarma yok. */
+.pick__ic svg { width: 30px; height: 30px; stroke-width: 1.5; }
+/* min-width:0 SART: olmadan uzun aciklama flex kutusunu tasirir. */
+.pick__txt { min-width: 0; }
+.pick__t { display: block; font-size: var(--fs-sm); font-weight: 600; margin-bottom: 1px; }
+.pick__d { display: block; font-size: var(--fs-mini); line-height: 1.3; color: var(--text-muted); }
+
+/* SECILI durum RENKLE anlatiliyor ama yalnizca renkle degil: kenarlik da
+   degisiyor. Renk korlugunde ayrim kaybolmasin. */
+.pick.is-protect { border-color: var(--accent); background: var(--accent-soft); }
+.pick.is-protect .pick__t,
+.pick.is-protect .pick__ic { color: var(--accent); }
+.pick.is-clean { border-color: var(--warn); background: var(--warn-soft); }
+.pick.is-clean .pick__t,
+.pick.is-clean .pick__ic { color: var(--warn); }
+
+/* --- Sure ve kapsam (yalnizca koruma secildiginde) --- */
+.opts {
+  margin-top: var(--sp-2);
+  padding: var(--sp-2);
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+/* Kapsam KUTUNUN DISINDA. Kendi kenarligi/zemini yok: iki kutu ust uste
+   dikey pay yiyor ve 600px sinirini zorluyordu. Ayrica kapsam artik
+   "Ne kadar sureyle" kutusunun icinde DEGIL - o basligin kapsamina
+   girmemesi icin fiziksel olarak ayri duruyor. */
+.opts--bare {
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+.opts__h {
+  display: block;
+  margin-bottom: 4px;
+  font-size: var(--fs-caption);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-faint);
+}
+/* DENENDI ve GERI ALINDI: kapsam etiketini segmentin soluna almak bir satir
+   kazandiriyordu ama yatay yeri yiyor ve ingilizce "Subdomains included (*)"
+   kirpiliyordu (olculdu). Dikey pay ugruna metni kesmek kabul edilmez. */
+
+.durseg {
+  display: flex;
+  border: 1px solid var(--divider);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--bg);
+}
+.durseg__b {
+  flex: 1;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-mini);
+  cursor: pointer;
+}
+.durseg__b + .durseg__b { border-left: 1px solid var(--divider); }
+/* Uc dugmeler seridin IC kavisini almak zorunda: serit 10px yuvarlak ve
+   overflow:hidden, dugme koseliyse aktif durumun inset cercevesi kesiliyor. */
+.durseg__b:first-child { border-radius: 9px 0 0 9px; }
+.durseg__b:last-child { border-radius: 0 9px 9px 0; }
+.durseg__b:hover { color: var(--text); }
+/* SECILI DURUM BELIRGIN. Onceden yuzey zemin + divider cercevesiydi;
+   divider dekoratif bir cizgi (bilincli dusuk kontrast) oldugu icin secili
+   dugme secilmemis olandan neredeyse ayirt edilemiyordu - kullanici bildirdi.
+   Uc boyutta ayriliyor, yalnizca renkle DEGIL: zemin, cerceve ve yazi
+   kalinligi. Renk accent cunku bu segmentler KORUMA ayari; yesil bu
+   arayuzde "korunuyor" demek ve segmentler yalnizca Koru secilince gorunur. */
+.durseg__b.active {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: 600;
+  /* Cerceve accent-border DEGIL tam accent: accent-border, accent-soft
+     zemininde ~2:1 kaliyor ve cerceve olarak is gormuyor. Tam accent hem
+     kuvvetli hem de secili KORU kartiyla (.pick.is-protect) ayni dili
+     konusuyor. Kontrast testi accent-text/accent-soft ciftini >=4.5
+     tutuyor ve accent ile accent-text ayni deger. */
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* Kapsam seridi: sure seridinin (.durseg) altinda, ondan yalnizca ustteki
+   bosluk kadar ayrilir. Ayri bir .scope kutusu ve acilir menusu vardi;
+   etiket alan adini tasidigi icin dar popup'ta tasiyordu. */
+.durseg--scope { margin-top: var(--sp-2); }
+/* Uzun ceviriler dugmeyi genisletmesin; iki dugme esit paylasir. */
+.durseg--scope .durseg__b {
+  min-width: 0;
+  padding: 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Yikici eylem: ayri ve altta --- */
+.acts__danger {
+  margin-top: var(--sp-2);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--divider);
+}
+.acts__danger .purge { width: 100%; border-radius: var(--r-lg); }
+
+
+/* ---------- ONAY MODU ----------
+   Buyuk bir modal DEGIL: popup 400px, ustune modal acmak ya sikisir ya ayri
+   pencere ister. Bunun yerine kararlar KATLANIR ve yerine onay gelir; veri
+   tablosu ekranda kalir. */
+.confirm {
+  margin-top: var(--sp-2);
+  padding: var(--sp-3);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--r-lg);
+  background: var(--danger-soft);
+}
+.confirm.hidden { display: none; }
+.confirm__h { font-size: var(--fs-sm); font-weight: 600; color: var(--danger); margin-bottom: 4px; }
+.confirm__x { font-size: var(--fs-mini); line-height: 1.45; color: var(--text-muted); }
+
+/* 7:3 - esit olsaydi sinir tam ortada kalir ve cift tik kumar olurdu. */
+.confirm__b { display: grid; grid-template-columns: 7fr 3fr; gap: var(--sp-2); margin-top: var(--sp-2); }
+.cbtn { height: 32px; border: 1px solid var(--divider); border-radius: var(--r-lg); font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
+.cbtn--no { background: var(--bg); color: var(--text); }
+/* Renkler .btn--danger-solid ile AYNI tokenlerden; genislik orani
+   (7:3) burada ozel, gorunum degil. */
+.cbtn--no:hover { border-color: var(--text-faint); }
+
+/* Katlanma: "bir sey degisti" mesajini verir. Kisa tutuluyor - uzun
+   animasyon, onay dugmesi yerine oturmadan tiklanmasina yol acar. */
+.fold {
+  overflow: hidden;
+  max-height: 400px;
+  opacity: 1;
+  transition: max-height 180ms ease, opacity 140ms ease;
+}
+/* `!important` BILINCLI ve tek istisna: yukaridaki `.hidden` yardimcisi da
+   `!important` tasiyor, o yuzden ozgulluk (0,2,0) tek basina yetmiyordu.
+   Olculdu - bu satir olmadan blok gizlendiginde display:none oluyor ve
+   katlanma animasyonu HIC oynamiyordu; ustteki gecis olu kodtu.
+   `.hidden`'in kendisinden `!important`i almak cozum DEGIL: options.css'te
+   ayni yardimci var (ui-audit ikisinin ayni kalmasini kilitliyor) ve orada
+   `.hidden`den SONRA tanimlanan tek-sinif `display` kurallari var. */
+.fold.hidden { display: block !important; max-height: 0; opacity: 0; }
+
+/* Hareket hassasiyeti olanlar icin animasyon YOK - anlik gecis. */
+@media (prefers-reduced-motion: reduce) {
+  .fold { transition: none; }
+}

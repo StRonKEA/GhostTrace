@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GhostTrace</title>
+  <link rel="stylesheet" href="../ui/theme.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="options.skipToContent">İçeriğe atla</a>
+
+  <div class="shell">
+
+    <!-- ================= KENAR ================= -->
+    <nav class="side" data-i18n-aria="options.navLandmark" aria-label="Bolumler">
+      <div class="side__brand">
+        <img class="side__mark" src="../icons/icon-48.png" alt="" aria-hidden="true"
+             width="18" height="18">
+        <span class="side__name">GhostTrace</span>
+        <span class="side__ver mono" id="versionBadge"></span>
+      </div>
+
+      <ul class="side__nav">
+        <li>
+          <button class="nav-item active" data-tab="rules-tab" type="button" aria-current="true">
+            <span class="gt-icon gt-icon--sm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </span>
+            <span data-i18n="options.navRules">Kurallar</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-tab="site-data-tab" type="button">
+            <span class="gt-icon gt-icon--sm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>
+              </svg>
+            </span>
+            <span data-i18n="options.navSiteData">Site verileri</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-tab="settings-tab" type="button">
+            <span class="gt-icon gt-icon--sm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+              </svg>
+            </span>
+            <span data-i18n="options.navSettings">Ayarlar</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-tab="stats-tab" type="button">
+            <span class="gt-icon gt-icon--sm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="7"/><line x1="18" y1="20" x2="18" y2="11"/>
+              </svg>
+            </span>
+            <span data-i18n="options.navStats">İstatistik</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-tab="logs-tab" type="button">
+            <span class="gt-icon gt-icon--sm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <polyline points="4 7 9 12 4 17"/><line x1="12" y1="17" x2="20" y2="17"/>
+              </svg>
+            </span>
+            <span data-i18n="options.navLogs">Günlükler</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-tab="about-tab" type="button">
+            <span class="gt-icon gt-icon--sm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/>
+              </svg>
+            </span>
+            <span data-i18n="options.navAbout">Hakkında</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- ================= ICERIK ================= -->
+    <main class="main" id="main">
+
+      <!-- ---------- KURALLAR ---------- -->
+      <section id="rules-tab" class="tab-panel active">
+        <header class="head">
+          <div class="head__text">
+            <h1 class="head__title" data-i18n="options.rulesTitle">Kurallar</h1>
+            <p class="head__sub" data-i18n="options.rulesDesc"></p>
+          </div>
+          <div class="head__actions">
+            <button id="btnExportRules" class="btn" type="button" data-i18n-title="options.btnExportRules">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </span>
+              <span data-i18n="options.btnExportRules"></span>
+            </button>
+            <button id="btnImportRules" class="btn" type="button" data-i18n-title="options.btnImportRules">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </span>
+              <span data-i18n="options.btnImportRules"></span>
+            </button>
+            <input type="file" id="fileImportInput" class="hidden" accept="application/json">
+          </div>
+        </header>
+
+        <!-- Kural ekleme: tek satirlik form. Onceden ayri bir kart ve sayfa
+             basligiyla AYNI baslik tasiyordu. -->
+        <form id="formAddRule" class="addrule">
+          <label class="sr-only" for="inputDomain" data-i18n="options.inputDomainPlaceholder"></label>
+          <input type="text" id="inputDomain" class="field addrule__domain"
+                 data-i18n-placeholder="options.inputDomainPlaceholder" autocomplete="off" spellcheck="false">
+          <label class="sr-only" for="selectRuleType" data-i18n="options.modalRuleTypeLabel"></label>
+          <select id="selectRuleType" class="field addrule__type">
+            <option value="white" data-i18n="options.ruleTypeWhite"></option>
+            <option value="grey" data-i18n="options.ruleTypeGrey"></option>
+            <option value="temp_15" data-i18n="options.ruleTypeTemp15"></option>
+            <option value="temp_60" data-i18n="options.ruleTypeTemp60"></option>
+            <option value="temp_1440" data-i18n="options.ruleTypeTemp1440"></option>
+          </select>
+          <label class="check addrule__scope">
+            <input type="checkbox" id="checkSubdomains">
+            <span data-i18n="options.checkSubdomainsDefaultLabel"></span>
+          </label>
+          <button type="submit" class="btn btn--primary">
+            <span data-i18n="options.btnAddRule"></span>
+          </button>
+        </form>
+
+        <p class="hint">
+          <strong class="hint__lead" data-i18n="options.legendWhite"></strong>
+          <span data-i18n="options.legendWhiteDesc"></span>
+          <strong class="hint__lead" data-i18n="options.legendGrey"></strong>
+          <span data-i18n="options.legendGreyDesc"></span>
+        </p>
+        <p class="hint" data-i18n="options.legendScopeHint"></p>
+
+        <div class="table-toolbar">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.7" y2="16.7"/></svg>
+            <label class="sr-only" for="inputSearchRule" data-i18n="options.searchRulesPlaceholder"></label>
+            <input type="text" id="inputSearchRule" class="field search-box__input"
+                   data-i18n-placeholder="options.searchRulesPlaceholder" autocomplete="off">
+            <button id="btnClearSearchRule" class="search-box__clear hidden" type="button" data-i18n-title="options.btnClearSearch">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </span>
+            </button>
+          </div>
+          <div class="segs" role="group" data-i18n-aria="options.filterGroupLabel" aria-label="Filtre">
+            <button class="seg active" data-filter="all" type="button">
+              <span data-i18n="options.filterAll"></span><span class="seg__n" id="countAll">0</span>
+            </button>
+            <button class="seg" data-filter="white" type="button">
+              <span data-i18n="options.filterWhite"></span><span class="seg__n" id="countWhite">0</span>
+            </button>
+            <button class="seg" data-filter="grey" type="button">
+              <span data-i18n="options.filterGrey"></span><span class="seg__n" id="countGrey">0</span>
+            </button>
+          </div>
+        </div>
+
+
+        <div class="panel">
+          <!-- KAYDIRMA sarmalayicisi. Site verileri tablosuna eklenmisti ama
+               buraya UNUTULMUSTU: .panel overflow:hidden tasiyor, yani bu
+               tablo sigmadiginda en sagdaki islem dugmeleri kaydirilamadan
+               KIRPILIYORDU - kullanici onlara hic ulasamaz. -->
+          <div class="table-scroll">
+          <table class="grid rules-table">
+            <thead>
+              <tr>
+                <th data-i18n="options.thDomain"></th>
+                <th data-i18n="options.thRuleType"></th>
+                <th data-i18n="options.thScope"></th>
+                <th data-i18n="options.thDateAdded"></th>
+                <th class="text-right" data-i18n="options.thActions"></th>
+              </tr>
+            </thead>
+            <tbody id="rulesTableBody"></tbody>
+          </table>
+          </div>
+          <div id="emptyRulesState" class="empty hidden">
+            <p class="empty__title" data-i18n="options.emptyRulesTitle"></p>
+            <span class="empty__desc" data-i18n="options.emptyRulesDesc"></span>
+          </div>
+        </div>
+
+        <section class="grp hidden" id="unprotectedLoginsSection">
+          <h2 class="grp__title" data-i18n="options.unprotectedLoginsTitle">Korumasız oturumların</h2>
+          <p class="grp__sub" data-i18n="options.unprotectedLoginsDesc"></p>
+          <div class="panel">
+            <table class="grid">
+              <thead>
+                <tr>
+                  <th data-i18n="options.thDomain"></th>
+                  <th data-i18n="options.thCookies"></th>
+                  <th class="text-right" data-i18n="options.thActions"></th>
+                </tr>
+              </thead>
+              <tbody id="unprotectedLoginsBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- ---------- SITE VERILERI ---------- -->
+      <section id="site-data-tab" class="tab-panel">
+        <header class="head">
+          <div class="head__text">
+            <h1 class="head__title" data-i18n="options.siteDataTitle">Site verileri</h1>
+            <p class="head__sub" data-i18n="options.siteDataDesc"></p>
+          </div>
+          <div class="head__actions">
+            <button id="btnRefreshSiteData" class="btn" type="button" data-i18n-title="options.btnRefreshSiteData">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <polyline points="21 4 21 10 15 10"/><path d="M20.5 14a8.5 8.5 0 1 1-2-8.4L21 8"/>
+                </svg>
+              </span>
+              <span data-i18n="options.btnRefreshSiteData"></span>
+            </button>
+            <button id="btnPurgeSelected" class="btn" type="button" disabled>
+              <span id="txtPurgeSelected"></span>
+            </button>
+            <button id="btnPurgeAllNonWhitelisted" class="btn btn--danger" type="button" data-i18n-title="options.btnPurgeAllNonWhitelisted">
+              <span data-i18n="options.btnPurgeAllNonWhitelisted"></span>
+            </button>
+          </div>
+        </header>
+
+        <p id="siteDataTruncatedNote" class="note note--warn hidden" data-i18n="options.siteDataTruncatedNote"></p>
+
+        <p class="hint">
+          <strong class="hint__lead" data-i18n="options.legendWhite"></strong>
+          <span data-i18n="options.legendWhiteDesc"></span>
+        </p>
+
+        <div class="table-toolbar">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.7" y2="16.7"/></svg>
+            <label class="sr-only" for="inputSearchSiteData" data-i18n="options.searchSiteDataPlaceholder"></label>
+            <input type="text" id="inputSearchSiteData" class="field search-box__input"
+                   data-i18n-placeholder="options.searchSiteDataPlaceholder" autocomplete="off">
+            <button id="btnClearSearchSiteData" class="search-box__clear hidden" type="button" data-i18n-title="options.btnClearSearch">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </span>
+            </button>
+          </div>
+          <div class="segs" role="group" data-i18n-aria="options.filterGroupLabel" aria-label="Filtre">
+            <button class="seg active" data-site-filter="all" type="button">
+              <span data-i18n="options.filterSiteAll"></span><span class="seg__n" id="countSiteAll">0</span>
+            </button>
+            <button class="seg" data-site-filter="direct" type="button">
+              <span data-i18n="options.filterSiteDirect"></span><span class="seg__n" id="countSiteDirect">0</span>
+            </button>
+            <button class="seg" data-site-filter="third_party" type="button">
+              <span data-i18n="options.filterSiteThirdParty"></span><span class="seg__n" id="countSiteThirdParty">0</span>
+            </button>
+            <button class="seg" data-site-filter="default" type="button">
+              <span data-i18n="options.filterSiteDefault"></span><span class="seg__n" id="countSiteDefault">0</span>
+            </button>
+            <button class="seg" data-site-filter="white" type="button">
+              <span data-i18n="options.filterSiteWhite"></span><span class="seg__n" id="countSiteWhite">0</span>
+            </button>
+            <button class="seg" data-site-filter="grey" type="button">
+              <span data-i18n="options.filterSiteGrey"></span><span class="seg__n" id="countSiteGrey">0</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <!-- YATAY KAYDIRMA sarmalayicisi. .panel'de overflow:hidden var;
+               tablo sigmayinca en sagdaki islem dugmeleri KIRPILIYOR ve
+               kullanici onlara hic ulasamiyordu (ekran goruntusuyle
+               bildirildi). Kirpmak yerine kaydiriyoruz: bilgi kaybi yok. -->
+          <div class="table-scroll">
+          <table class="grid rules-table site-data-table">
+            <thead>
+              <tr>
+                <th class="grid__pick">
+                  <label class="sr-only" for="checkSelectAllSites" data-i18n="options.thDomain"></label>
+                  <input type="checkbox" id="checkSelectAllSites" class="site-checkbox">
+                </th>
+                <th data-i18n="options.thDomain"></th>
+                <th data-i18n="options.thType"></th>
+                <th data-i18n="options.thCookies"></th>
+                <th data-i18n="options.thHistory"></th>
+                <th data-i18n="options.thDownloadsRequests"></th>
+                <th data-i18n="options.thRuleStatus"></th>
+                <th class="text-right" data-i18n="options.thActions"></th>
+              </tr>
+            </thead>
+            <tbody id="siteDataTableBody"></tbody>
+          </table>
+          </div>
+          <div id="emptySiteDataState" class="empty hidden">
+            <p class="empty__title" data-i18n="options.emptySiteDataTitle"></p>
+            <span class="empty__desc" data-i18n="options.emptySiteDataDesc"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- AYARLAR ---------- -->
+      <section id="settings-tab" class="tab-panel">
+        <header class="head">
+          <div class="head__text">
+            <h1 class="head__title" data-i18n="options.navSettings">Ayarlar</h1>
+          </div>
+          <p class="head__note" data-i18n="options.settingsAutoSaveNote"></p>
+        </header>
+
+        <!-- === Zamanlama === -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.timingTitle"></h2>
+
+          <div class="row row--stack">
+            <div class="row__text">
+              <label class="row__label" id="lblCleanDelay" for="numCleanDelay" data-i18n="options.delaySettingTitle"></label>
+            </div>
+            <div class="delay">
+              <input type="range" id="rangeCleanDelay" min="0" max="600" step="30" value="60" class="delay__range"
+                     aria-labelledby="lblCleanDelay">
+              <input type="number" id="numCleanDelay" min="0" max="600" step="1" value="60" class="field delay__num">
+              <span class="row__unit" data-i18n="common.secondsUnit"></span>
+            </div>
+            <p class="note" data-i18n="options.delaySettingDesc"></p>
+            <p class="note" data-i18n="options.delayNoteMv3"></p>
+          </div>
+
+        </section>
+
+        <!-- === Periyodik supurme === -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.periodicTitle"></h2>
+          <p class="grp__sub" data-i18n="options.periodicDesc"></p>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingPeriodicCleanEnabled" data-i18n="options.periodicEnabledTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/>
+                </svg>
+              </span>
+            </button>
+            <label class="switch">
+              <input type="checkbox" id="settingPeriodicCleanEnabled">
+              <span class="switch__track"></span>
+            </label>
+            <div class="row__detail" hidden>
+              <p data-i18n="options.periodicEnabledDesc"></p>
+              <p class="note note--warn" data-i18n="options.periodicDisabledWarning"></p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="row__text">
+              <label class="row__label" for="selectPeriodicInterval" data-i18n="options.periodicIntervalLabel"></label>
+            </div>
+            <select id="selectPeriodicInterval" class="field row__control">
+              <option value="15" data-i18n="options.interval15m"></option>
+              <option value="30" data-i18n="options.interval30m"></option>
+              <option value="60" data-i18n="options.interval60m"></option>
+              <option value="120" data-i18n="options.interval120m"></option>
+              <option value="360" data-i18n="options.interval360m"></option>
+              <option value="1440" data-i18n="options.interval1440m"></option>
+            </select>
+          </div>
+        </section>
+
+        <!-- === Temizlenecek veriler === -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.settingsCleanTitle"></h2>
+          <p class="grp__sub" data-i18n="options.settingsCleanDesc"></p>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingCleanHistory" data-i18n="options.cleanHistoryTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingCleanHistory"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.cleanHistoryDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingCleanCookies" data-i18n="options.cleanCookiesTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingCleanCookies"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.cleanCookiesDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingCleanLocalStorage" data-i18n="options.cleanLocalStorageTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingCleanLocalStorage"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.cleanLocalStorageDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingCleanIndexedDB" data-i18n="options.cleanIndexedDBTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingCleanIndexedDB"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.cleanIndexedDBDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingCleanServiceWorkers" data-i18n="options.cleanServiceWorkersTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingCleanServiceWorkers"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.cleanServiceWorkersDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingCleanDownloads" data-i18n="options.cleanDownloadsTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingCleanDownloads"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.cleanDownloadsDesc"></p></div>
+          </div>
+        </section>
+
+        <!-- === Beyaz liste istisnalari === -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.whitelistExceptionsTitle"></h2>
+          <p class="grp__sub" data-i18n="options.whitelistExceptionsDesc"></p>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingWhitelistCleanHistory" data-i18n="options.whitelistCleanHistoryTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingWhitelistCleanHistory"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.whitelistCleanHistoryDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingWhitelistCleanDownloads" data-i18n="options.whitelistCleanDownloadsTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingWhitelistCleanDownloads"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.whitelistCleanDownloadsDesc"></p></div>
+          </div>
+        </section>
+
+        <!-- === Izleme ===
+             trackThirdParty ve iframe izleme onceden "Bildirimler" altindaydi;
+             hicbiri bildirim degil, KESIF ayari. -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.trackingTitle"></h2>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingTrackThirdParty" data-i18n="options.trackThirdPartyTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingTrackThirdParty"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.trackThirdPartyDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item row--child">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingTrackThirdPartyFrames" data-i18n="options.trackFramesTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingTrackThirdPartyFrames"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.trackFramesDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingStripTrackingParams" data-i18n="options.stripTrackingParamsTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingStripTrackingParams"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.stripTrackingParamsDesc"></p></div>
+          </div>
+        </section>
+
+        <!-- === Istatistik gecmisi === -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.statsHistoryTitle"></h2>
+          <p class="grp__sub" data-i18n="options.statsHistoryDesc"></p>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingKeepThirdPartyHistory" data-i18n="options.keepThirdPartyHistoryTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingKeepThirdPartyHistory"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.keepThirdPartyHistoryDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingKeepSiteHistory" data-i18n="options.keepSiteHistoryTitle"></label>
+              <span class="setting-warning" data-i18n="options.keepSiteHistoryWarn"></span>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingKeepSiteHistory"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.keepSiteHistoryDesc"></p></div>
+          </div>
+
+          <div class="row">
+            <div class="row__text">
+              <label class="row__label" for="selectStatsHistoryRetention" data-i18n="options.statsHistoryRetentionLabel"></label>
+            </div>
+            <select id="selectStatsHistoryRetention" class="field row__control">
+              <option value="session" data-i18n="options.retentionSession"></option>
+              <option value="daily" data-i18n="options.retentionDaily"></option>
+              <option value="weekly" data-i18n="options.retentionWeekly"></option>
+              <option value="monthly" data-i18n="options.retentionMonthly"></option>
+              <option value="unlimited" data-i18n="options.retentionUnlimited"></option>
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="row__text">
+              <span class="row__label" data-i18n="options.clearStatsHistoryLabel"></span>
+            </div>
+            <button id="btnClearStatsHistory" class="btn btn--danger row__control" type="button" data-i18n="options.clearStatsHistoryBtn"></button>
+          </div>
+        </section>
+
+        <!-- === Gorunum ve bildirim === -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.languageTitle"></h2>
+          <p class="grp__sub" data-i18n="options.languageDesc"></p>
+
+          <div class="row">
+            <div class="row__text">
+              <label class="row__label" for="selectTheme" data-i18n="options.themeLabel"></label>
+            </div>
+            <select id="selectTheme" class="field row__control">
+              <option value="system" data-i18n="options.themeSystem"></option>
+              <option value="light" data-i18n="options.themeLight"></option>
+              <option value="dark" data-i18n="options.themeDark"></option>
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="row__text">
+              <label class="row__label" for="selectLanguage" data-i18n="options.languageLabel"></label>
+            </div>
+            <select id="selectLanguage" class="field row__control">
+              <option value="auto" data-i18n="options.langAuto"></option>
+              <option value="tr" data-i18n="options.langTr"></option>
+              <option value="en" data-i18n="options.langEn"></option>
+            </select>
+          </div>
+
+        </section>
+
+        <!-- === Toplu temizlik ===
+             cleanCacheOnPurgeAll BURAYA TASINDI. Onceden
+             "Temizlenecek veriler" bolumundeydi ama o bolumun tanimi "bir site
+             temizlenirken hangi veri turlerinin silinecegi" ve bu ayar tam
+             olarak orada CALISMIYOR - kendi aciklamasi "yalnizca Tumunu
+             temizle ve periyodik supurmede calisir" diyor. Yani bolumdeki tek
+             anahtar ki bolumun vaadini karsilamiyordu. -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.bulkCleanTitle"></h2>
+          <p class="grp__sub" data-i18n="options.bulkCleanDesc"></p>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingCleanCacheOnPurgeAll" data-i18n="options.cleanCacheOnPurgeAllTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingCleanCacheOnPurgeAll"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden>
+              <p data-i18n="options.cleanCacheOnPurgeAllDesc"></p>
+              <p class="note note--warn" data-i18n="options.cacheGlobalWarning"></p>
+            </div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingCleanOnStartup" data-i18n="options.cleanOnStartupTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingCleanOnStartup"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden>
+              <p data-i18n="options.cleanOnStartupDesc"></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- === Bildirim ve rozet === -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.notificationsTitle"></h2>
+          <p class="grp__sub" data-i18n="options.notificationsDesc"></p>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingShowBadgeCount" data-i18n="options.showBadgeCountTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingShowBadgeCount"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.showBadgeCountDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingNotifyOnClean" data-i18n="options.notifyOnCleanTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingNotifyOnClean"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.notifyOnCleanDesc"></p></div>
+          </div>
+
+          <div class="row toggle-item">
+            <div class="row__text toggle-meta">
+              <label class="row__label" for="settingContextMenuEnabled" data-i18n="options.contextMenuTitle"></label>
+            </div>
+            <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+            </button>
+            <label class="switch"><input type="checkbox" id="settingContextMenuEnabled"><span class="switch__track"></span></label>
+            <div class="row__detail" hidden><p data-i18n="options.contextMenuDesc"></p></div>
+          </div>
+        </section>
+
+        <!-- === Sertlestirme === -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.hardeningTitle"></h2>
+          <p class="grp__sub" data-i18n="options.hardeningDesc"></p>
+
+          <div id="hardeningPermissionRow" class="permrow hidden">
+            <span class="note note--warn" data-i18n="options.hardeningPermissionMissing"></span>
+            <button id="btnRequestHardeningPermission" class="btn btn--primary" type="button">
+              <span data-i18n="options.hardeningEnableBtn"></span>
+            </button>
+          </div>
+
+          <div id="hardeningToggleList" class="toggle-list">
+            <div class="row toggle-item">
+              <div class="row__text toggle-meta">
+                <label class="row__label" for="hardenBlockThirdPartyCookies" data-i18n="options.hardenThirdPartyCookiesTitle"></label>
+              </div>
+              <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+                <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+              </button>
+              <label class="switch"><input type="checkbox" id="hardenBlockThirdPartyCookies" data-hardening="blockThirdPartyCookies"><span class="switch__track"></span></label>
+              <div class="row__detail" hidden><p data-i18n="options.hardenThirdPartyCookiesDesc"></p></div>
+            </div>
+
+            <div class="row toggle-item">
+              <div class="row__text toggle-meta">
+                <label class="row__label" for="hardenDisableRelatedWebsiteSets" data-i18n="options.hardenRelatedWebsiteSetsTitle"></label>
+              </div>
+              <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+                <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+              </button>
+              <label class="switch"><input type="checkbox" id="hardenDisableRelatedWebsiteSets" data-hardening="disableRelatedWebsiteSets"><span class="switch__track"></span></label>
+              <div class="row__detail" hidden><p data-i18n="options.hardenRelatedWebsiteSetsDesc"></p></div>
+            </div>
+
+            <div class="row toggle-item">
+              <div class="row__text toggle-meta">
+                <label class="row__label" for="hardenDisableNetworkPrediction" data-i18n="options.hardenNetworkPredictionTitle"></label>
+              </div>
+              <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+                <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+              </button>
+              <label class="switch"><input type="checkbox" id="hardenDisableNetworkPrediction" data-hardening="disableNetworkPrediction"><span class="switch__track"></span></label>
+              <div class="row__detail" hidden><p data-i18n="options.hardenNetworkPredictionDesc"></p></div>
+            </div>
+
+                        <div class="row toggle-item">
+              <div class="row__text toggle-meta">
+                <label class="row__label" for="hardenDisableSearchSuggest" data-i18n="options.hardenSearchSuggestTitle"></label>
+              </div>
+              <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+                <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+              </button>
+              <label class="switch"><input type="checkbox" id="hardenDisableSearchSuggest" data-hardening="disableSearchSuggest"><span class="switch__track"></span></label>
+              <div class="row__detail" hidden><p data-i18n="options.hardenSearchSuggestDesc"></p></div>
+            </div>
+
+            <div class="row toggle-item">
+              <div class="row__text toggle-meta">
+                <label class="row__label" for="hardenDisableAlternateErrorPages" data-i18n="options.hardenAlternateErrorPagesTitle"></label>
+              </div>
+              <button class="row__info" type="button" data-i18n-title="common.details" aria-expanded="false">
+                <span class="gt-icon gt-icon--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8"/></svg></span>
+              </button>
+              <label class="switch"><input type="checkbox" id="hardenDisableAlternateErrorPages" data-hardening="disableAlternateErrorPages"><span class="switch__track"></span></label>
+              <div class="row__detail" hidden><p data-i18n="options.hardenAlternateErrorPagesDesc"></p></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- === Sifirlama === -->
+        <section class="grp grp--danger">
+          <h2 class="grp__title" data-i18n="options.dangerZoneTitle"></h2>
+          <p class="grp__sub" data-i18n="options.dangerZoneDesc"></p>
+
+          <div class="grp__act">
+            <button id="btnResetOnlySettings" class="btn" type="button">
+              <span data-i18n="options.btnResetOnlySettings"></span>
+            </button>
+            <button id="btnResetOnlyRules" class="btn btn--danger" type="button">
+              <span data-i18n="options.btnResetOnlyRules"></span>
+            </button>
+            <button id="btnFactoryReset" class="btn btn--danger" type="button">
+              <span data-i18n="options.btnFactoryReset"></span>
+            </button>
+          </div>
+        </section>
+      </section>
+
+      <!-- ---------- ISTATISTIK ---------- -->
+      <section id="stats-tab" class="tab-panel">
+        <header class="head">
+          <div class="head__text">
+            <h1 class="head__title" data-i18n="options.statsTitle">İstatistik</h1>
+            <p class="head__sub" data-i18n="options.statsDesc"></p>
+          </div>
+          <div class="head__actions">
+            <!-- IKI AYRI eylem, cunku IKI AYRI depo: sayaclar `stats`'ta,
+                 listeler temizlik ozeti gunlukleriyle karsilasma
+                 haritalarinda. Tek dugme ikisini birden yapsaydi teshis
+                 gunluklerini de goturmesi gerekirdi. -->
+            <button id="btnClearInsightLists" class="btn" type="button">
+              <span data-i18n="options.btnClearInsightLists"></span>
+            </button>
+            <button id="btnResetStats" class="btn btn--danger" type="button">
+              <span data-i18n="options.btnResetStats"></span>
+            </button>
+          </div>
+        </header>
+
+        <div class="stat-hero">
+          <span class="stat-hero-label" data-i18n="options.statBytesFreed"></span>
+          <span class="stat-hero-num" id="statBytesFreed">0 B</span>
+          <span class="stat-hero-note" data-i18n="options.statBytesFreedNote"></span>
+          <span class="stat-hero-note" id="statStorageBytes"></span>
+        </div>
+
+        <div class="metric-strip">
+          <div class="metric-cell">
+            <span class="metric-num" id="statCookies">0</span>
+            <span class="metric-label" data-i18n="options.statCookies"></span>
+          </div>
+          <div class="metric-cell">
+            <span class="metric-num" id="statHistory">0</span>
+            <span class="metric-label" data-i18n="options.statHistory"></span>
+          </div>
+          <div class="metric-cell">
+            <span class="metric-num" id="statDownloads">0</span>
+            <span class="metric-label" data-i18n="options.statDownloads"></span>
+          </div>
+          <div class="metric-cell">
+            <span class="metric-num" id="statCleans">0</span>
+            <span class="metric-label" data-i18n="options.statCleans"></span>
+          </div>
+        </div>
+
+        <p id="statLastCleanedRow" class="status-line tone-idle">
+          <span class="status-line-label" data-i18n="options.statLastCleaned"></span>
+          <span class="status-line-value" id="statLastCleaned"></span>
+        </p>
+      
+        <section class="grp" id="recentCleanupsSection">
+          <h2 class="grp__title" data-i18n="options.recentCleanupsTitle">Son temizlikler</h2>
+          <p class="grp__sub" data-i18n="options.recentCleanupsDesc"></p>
+          <div class="panel">
+            <table class="grid">
+              <thead>
+                <tr>
+                  <th data-i18n="options.thLogTime"></th>
+                  <th data-i18n="options.thDomain"></th>
+                  <th data-i18n="options.recentCleanupsWhat"></th>
+                </tr>
+              </thead>
+              <tbody id="recentCleanupsBody"></tbody>
+            </table>
+            <div id="recentCleanupsEmpty" class="empty hidden">
+              <p class="empty__title" data-i18n="options.recentCleanupsEmptyTitle"></p>
+              <span class="empty__desc" data-i18n="options.recentCleanupsEmptyDesc"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="grp hidden" id="topCleanedSection">
+          <div class="grp__head">
+            <h2 class="grp__title" id="topCleanedTitle" data-i18n="options.topCleanedTitle">En çok</h2>
+            <div class="segs" role="group" aria-labelledby="topCleanedTitle">
+              <button class="seg active" data-insight="cleaned" type="button">
+                <span data-i18n="options.insightCleaned"></span>
+              </button>
+              <button class="seg" data-insight="thirdparty" type="button">
+                <span data-i18n="options.insightThirdParty"></span>
+              </button>
+            </div>
+          </div>
+          <p class="grp__sub" id="topCleanedDesc" data-i18n="options.topCleanedDesc"></p>
+
+          <div class="panel" id="topCleanedPanel">
+            <table class="grid">
+              <thead>
+                <tr>
+                  <th class="rank-head" aria-label="#">#</th>
+                  <th data-i18n="options.thDomain"></th>
+                  <th id="topCleanedCountHead" data-i18n="options.topCleanedCount"></th>
+                  <th id="topCleanedWhatHead" data-i18n="options.recentCleanupsWhat"></th>
+                </tr>
+              </thead>
+              <tbody id="topCleanedBody"></tbody>
+            </table>
+            <div id="topCleanedEmpty" class="empty hidden">
+              <p class="empty__title" data-i18n="options.topCleanedEmptyTitle"></p>
+              <span class="empty__desc" id="topCleanedEmptyDesc"></span>
+            </div>
+          </div>
+        </section>
+</section>
+
+      <!-- ---------- GUNLUKLER ---------- -->
+      <section id="logs-tab" class="tab-panel">
+        <header class="head">
+          <div class="head__text">
+            <h1 class="head__title" data-i18n="options.logsTitle">Günlükler</h1>
+            <p class="head__sub" data-i18n="options.logsDesc"></p>
+          </div>
+          <div class="header-tools">
+            <button id="btnRefreshLogs" class="btn btn-icon-only" type="button" aria-label="" data-i18n-title="options.btnRefreshLogs" data-i18n-aria="options.btnRefreshLogs">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <polyline points="21 4 21 10 15 10"/><path d="M20.5 14a8.5 8.5 0 1 1-2-8.4L21 8"/>
+                </svg>
+              </span>
+            </button>
+            <button id="btnCopyLogs" class="btn btn-icon-only" type="button" aria-label="" data-i18n-title="options.btnCopyLogs" data-i18n-aria="options.btnCopyLogs">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+              </span>
+            </button>
+            <button id="btnExportLogsTxt" class="btn btn-icon-only" type="button" aria-label="" data-i18n-title="options.btnExportLogsTxt" data-i18n-aria="options.btnExportLogsTxt">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </span>
+            </button>
+            <button id="btnExportLogsJson" class="btn btn-icon-only" type="button" aria-label="" data-i18n-title="options.btnExportLogsJson" data-i18n-aria="options.btnExportLogsJson">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <path d="M8 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h2"/><path d="M16 3h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2"/>
+                </svg>
+              </span>
+            </button>
+            <button id="btnClearLogs" class="btn btn--danger" type="button">
+              <span data-i18n="options.btnClearLogs"></span>
+            </button>
+          </div>
+        </header>
+
+        <section class="grp">
+          <div class="grp__head">
+            <h2 class="grp__title" data-i18n="options.diagnosticsTitle"></h2>
+            <button id="btnRefreshDiagnostics" class="btn" type="button">
+              <span data-i18n="options.btnRefreshDiagnostics"></span>
+            </button>
+          </div>
+          <div id="diagnosticsList" class="diag"></div>
+        </section>
+
+        <div class="table-toolbar">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.7" y2="16.7"/></svg>
+            <label class="sr-only" for="inputSearchLogs" data-i18n="options.searchLogsPlaceholder"></label>
+            <input type="text" id="inputSearchLogs" class="field search-box__input"
+                   data-i18n-placeholder="options.searchLogsPlaceholder" autocomplete="off">
+            <button id="btnClearSearchLogs" class="search-box__clear hidden" type="button" data-i18n-title="options.btnClearSearch">
+              <span class="gt-icon gt-icon--sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </span>
+            </button>
+          </div>
+          <div class="segs" role="group" data-i18n-aria="options.filterGroupLabel" aria-label="Filtre">
+            <button class="seg active" data-log-filter="all" type="button">
+              <span data-i18n="options.filterLogAll"></span><span class="seg__n" id="countLogAll">0</span>
+            </button>
+            <button class="seg" data-log-filter="PURGE" type="button">
+              <span data-i18n="options.filterLogPurge"></span><span class="seg__n" id="countLogPurge">0</span>
+            </button>
+            <button class="seg" data-log-filter="COOKIE" type="button">
+              <span data-i18n="options.filterLogCookie"></span><span class="seg__n" id="countLogCookie">0</span>
+            </button>
+            <button class="seg" data-log-filter="TAB" type="button">
+              <span data-i18n="options.filterLogTab"></span><span class="seg__n" id="countLogTab">0</span>
+            </button>
+            <button class="seg" data-log-filter="ALARM" type="button">
+              <span data-i18n="options.filterLogAlarm"></span><span class="seg__n" id="countLogAlarm">0</span>
+            </button>
+            <button class="seg" data-log-filter="ERROR" type="button">
+              <span data-i18n="options.filterLogError"></span><span class="seg__n" id="countLogError">0</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="logbar">
+          <label class="logbar__field">
+            <span data-i18n="options.logLevelLabel"></span>
+            <select id="selectLogLevel" class="field" data-i18n-title="options.logLevelDesc">
+              <option value="off" data-i18n="options.logLevelOff"></option>
+              <option value="error" data-i18n="options.logLevelError"></option>
+              <option value="info" data-i18n="options.logLevelInfo"></option>
+            </select>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="checkAutoScrollLogs" checked>
+            <span data-i18n="options.autoScrollLogs"></span>
+          </label>
+          <span class="logbar__note" data-i18n="options.logsSessionOnlyNote"></span>
+        </div>
+
+        <div class="panel log-console-card">
+          <div class="log-console-wrap">
+          <table id="logDataTable" class="grid log-data-table">
+            <colgroup>
+              <col class="col-log-time">
+              <col class="col-log-level">
+              <col class="col-log-domain">
+              <col class="col-log-message">
+              <col class="col-log-expand">
+            </colgroup>
+            <thead>
+              <tr>
+                <th data-i18n="options.thLogTime"></th>
+                <th data-i18n="options.thLogLevel"></th>
+                <th data-i18n="options.thLogDomain"></th>
+                <th data-i18n="options.thLogMessage"></th>
+                <th><span class="sr-only" data-i18n="options.thActions"></span></th>
+              </tr>
+            </thead>
+            <tbody id="logsTableBody"></tbody>
+          </table>
+          </div>
+          <div id="emptyLogsState" class="empty log-empty-overlay hidden">
+            <p class="empty__title" data-i18n="options.emptyLogsTitle"></p>
+            <span class="empty__desc" data-i18n="options.emptyLogsDesc"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- HAKKINDA ---------- -->
+      <section id="about-tab" class="tab-panel">
+        <header class="head">
+          <div class="head__text">
+            <h1 class="head__title" data-i18n="options.aboutTitle">Hakkında</h1>
+            <p class="head__sub" data-i18n="options.aboutLead"></p>
+          </div>
+        </header>
+
+        <!-- Vaat: tek cumle. Eklentinin ne yaptigini bir satirda anlatamiyorsak
+             kullanici hicbir ayara guvenerek dokunamaz. -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.aboutPurposeTitle"></h2>
+          <p class="grp__sub" data-i18n="options.aboutPurposeBody"></p>
+        </section>
+
+        <!-- Yasam dongusu: sirali, cunku kullanicinin kafasindaki soru
+             "ne zaman siliniyor?" -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.aboutHowTitle"></h2>
+          <ol class="about-steps">
+            <li>
+              <strong data-i18n="options.aboutStep1Title"></strong>
+              <span data-i18n="options.aboutStep1Body"></span>
+            </li>
+            <li>
+              <strong data-i18n="options.aboutStep2Title"></strong>
+              <span data-i18n="options.aboutStep2Body"></span>
+            </li>
+            <li>
+              <strong data-i18n="options.aboutStep3Title"></strong>
+              <span data-i18n="options.aboutStep3Body"></span>
+            </li>
+            <li>
+              <strong data-i18n="options.aboutStep4Title"></strong>
+              <span data-i18n="options.aboutStep4Body"></span>
+            </li>
+          </ol>
+        </section>
+
+        <!-- Koruma kademeleri: ayrim "ne zaman biter". Kullanici gri listeyi
+             tam bu yuzden sordu; tablo o soruyu tek bakista yanitliyor. -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.aboutTiersTitle"></h2>
+          <p class="grp__sub" data-i18n="options.aboutTiersSub"></p>
+          <div class="panel">
+            <table class="grid">
+              <thead>
+                <tr>
+                  <th data-i18n="options.aboutTierCol"></th>
+                  <th data-i18n="options.aboutTierWhenCol"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge-tag tag-default"><span class="badge-tag-dot"></span><span data-i18n="options.badgeDefaultRule"></span></span></td>
+                  <td data-i18n="options.aboutTierDefaultWhen"></td>
+                </tr>
+                <tr>
+                  <td><span class="badge-tag tag-grey"><span class="badge-tag-dot"></span><span data-i18n="options.badgeGreyRule"></span></span></td>
+                  <td data-i18n="options.aboutTierGreyWhen"></td>
+                </tr>
+                <tr>
+                  <td><span class="badge-tag tag-temp"><span class="badge-tag-dot"></span><span data-i18n="options.tagTemp"></span></span></td>
+                  <td data-i18n="options.aboutTierTempWhen"></td>
+                </tr>
+                <tr>
+                  <td><span class="badge-tag tag-white"><span class="badge-tag-dot"></span><span data-i18n="options.badgeWhiteRule"></span></span></td>
+                  <td data-i18n="options.aboutTierWhiteWhen"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Gizlilik: DOGRULANABILIR ifadeler. "Gizliliginize onem veriyoruz"
+             gibi bir cumle burada durmaz - her madde kod tarafinda karsiligi
+             olan bir taahhut. -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.aboutPrivacyTitle"></h2>
+          <p class="grp__sub" data-i18n="options.aboutPrivacySub"></p>
+          <ul class="about-facts">
+            <li data-i18n="options.aboutPrivacy1"></li>
+            <li data-i18n="options.aboutPrivacy2"></li>
+            <li data-i18n="options.aboutPrivacy3"></li>
+            <li data-i18n="options.aboutPrivacy4"></li>
+            <li data-i18n="options.aboutPrivacy5"></li>
+          </ul>
+        </section>
+
+        <!-- Sinirlar. Bu bolum bilincli olarak SILINMEDI: yapamadigini
+             soylemeyen bir gizlilik araci, yaptigini da kanitlayamaz. -->
+        <section class="grp">
+          <h2 class="grp__title" data-i18n="options.aboutLimitsTitle"></h2>
+          <p class="grp__sub" data-i18n="options.aboutLimitsSub"></p>
+          <ul class="about-facts about-facts--limit">
+            <li data-i18n="options.aboutLimit1"></li>
+            <li data-i18n="options.aboutLimit2"></li>
+            <li data-i18n="options.aboutLimit3"></li>
+            <li data-i18n="options.aboutLimit4"></li>
+            <li data-i18n="options.aboutLimit5"></li>
+            <li data-i18n="options.aboutLimit6"></li>
+          </ul>
+        </section>
+
+        <section class="grp">
+          <div class="panel about-foot">
+            <span class="about-foot__name">GhostTrace</span>
+            <span class="about-foot__ver mono" id="aboutVersion"></span>
+            <span class="about-foot__note" data-i18n="options.aboutFootNote"></span>
+          </div>
+        </section>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= SITE DENETIM KIPI ================= -->
+  <div id="siteControlModal" class="overlay hidden">
+    <div class="modal" role="dialog" aria-modal="true"
+         aria-labelledby="modalSiteDomain" aria-describedby="modalSiteSubtext">
+      <header class="modal__head">
+        <div>
+          <h2 class="modal__title" id="modalSiteDomain"></h2>
+          <p class="modal__sub" id="modalSiteSubtext"></p>
+        </div>
+        <button id="modalCloseBtn" class="btn btn--icon btn--quiet" type="button" data-i18n-title="common.close">
+          <span class="gt-icon gt-icon--sm" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </span>
+        </button>
+      </header>
+
+      <div class="modal__body">
+        <div class="row">
+          <div class="row__text">
+            <label class="row__label" for="modalSelectRuleType" data-i18n="options.modalRuleTypeLabel"></label>
+          </div>
+          <select id="modalSelectRuleType" class="field row__control">
+            <option value="white" data-i18n="options.ruleTypeWhite"></option>
+            <option value="grey" data-i18n="options.ruleTypeGrey"></option>
+            <option value="temp_15" data-i18n="options.ruleTypeTemp15"></option>
+            <option value="temp_60" data-i18n="options.ruleTypeTemp60"></option>
+            <option value="temp_1440" data-i18n="options.ruleTypeTemp1440"></option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="row__text">
+            <span class="row__label" data-i18n="options.thScope"></span>
+          </div>
+          <label class="check">
+            <input type="checkbox" id="modalCheckSubdomains">
+            <span id="txtModalSubdomains">Tüm alt alan adlarını kapsa</span>
+          </label>
+        </div>
+
+        <div class="modal__section">
+          <h3 class="grp__title" id="modalKeepModeTitle" data-i18n="options.modalKeepModeLabel"></h3>
+          <!-- YALNIZCA GERCEK MODLAR. "Giris cerezlerini isaretle" buraya
+               konmustu ama o bir mod degil, secim listesini degistiren bir
+               EYLEM; grupta durunca ucuncu bir kalici secenek gibi gorunuyor
+               ve secili durumu olmadigi icin de bozuk duruyordu. Yeri,
+               kardesleriyle ayni yer: asagidaki ozel liste arac cubugu. -->
+          <div class="segs segs--modes" role="group" aria-labelledby="modalKeepModeTitle">
+            <button id="btnModalModeAll" class="seg active" type="button" data-i18n="options.keepModeAll"></button>
+            <button id="btnModalModeCustom" class="seg" type="button" data-i18n="options.keepModeCustom"></button>
+          </div>
+        </div>
+
+        <div id="modalCustomCookieArea" class="modal__section hidden">
+          <div class="modal__toolbar">
+            <span class="hint" data-i18n="options.modalCustomPatternsHint"></span>
+            <button id="btnSuggestSessionCookies" class="linkbtn" type="button"
+                    data-i18n="options.keepModeSessionOnly"
+                    data-i18n-title="options.keepModeSessionOnlyDesc"></button>
+            <button id="btnSelectAllCookies" class="linkbtn" type="button" data-i18n="options.modalBtnSelectAll"></button>
+            <button id="btnDeselectAllCookies" class="linkbtn" type="button" data-i18n="options.modalBtnDeselectAll"></button>
+          </div>
+          <label class="sr-only" for="inputModalSearchCookie" data-i18n="options.modalSearchCookiePlaceholder"></label>
+          <input type="text" id="inputModalSearchCookie" class="field"
+                 data-i18n-placeholder="options.modalSearchCookiePlaceholder" autocomplete="off">
+          <div id="modalCookieList" class="cookielist">
+            <div class="cookielist__loading" data-i18n="options.modalScanningCookies"></div>
+          </div>
+          <label class="sr-only" for="inputModalCustomPatterns" data-i18n="options.modalCustomPatternsHint"></label>
+          <input type="text" id="inputModalCustomPatterns" class="field"
+                 data-i18n-placeholder="options.modalCustomPatternsPlaceholder" autocomplete="off">
+        </div>
+      </div>
+
+      <footer class="modal__foot">
+        <button id="btnModalCancel" class="btn" type="button" data-i18n="common.cancel"></button>
+        <button id="btnModalSave" class="btn btn--primary" type="button" data-i18n="options.btnModalSave"></button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ================= ONAY KIPI ================= -->
+  <div id="customModal" class="overlay hidden">
+    <div class="modal modal--confirm" role="alertdialog" aria-modal="true"
+         aria-labelledby="modalTitle" aria-describedby="modalDescription">
+      <h2 class="modal__title" id="modalTitle"></h2>
+      <p class="modal__text" id="modalDescription"></p>
+      <footer class="modal__foot">
+        <button id="modalBtnCancel" class="btn" type="button" data-i18n="common.cancel"></button>
+        <button id="modalBtnConfirm" class="btn btn--danger-solid" type="button" data-i18n="common.clean"></button>
+      </footer>
+    </div>
+  </div>
+
+  <div id="optionsToast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>

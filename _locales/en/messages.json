@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "GhostTrace - Auto Cookie & History Cleaner",
+    "description": "Extension title"
+  },
+  "extDesc": {
+    "message": "Automatically cleans cookies, browsing history, download logs, and local storage when you close tabs.",
+    "description": "Extension description"
+  },
+  "cmdPurgeAll": {
+    "message": "Clean all data outside Whitelist",
+    "description": "Shortcut command description"
+  },
+  "cmdPurgeCurrent": {
+    "message": "Clean data for the current tab's website",
+    "description": "Shortcut command description"
+  }
+}

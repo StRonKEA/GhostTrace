@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "GhostTrace - Otomatik Çerez ve Geçmiş Temizleyici",
+    "description": "Extension title"
+  },
+  "extDesc": {
+    "message": "Sekmeleri kapattığınızda çerezleri, geçmişi, indirme listesini ve yerel site verilerini otomatik olarak temizler.",
+    "description": "Extension description"
+  },
+  "cmdPurgeAll": {
+    "message": "Beyaz liste haricindeki tüm site verilerini temizle",
+    "description": "Shortcut command description"
+  },
+  "cmdPurgeCurrent": {
+    "message": "Açık sekmedeki sitenin verilerini anında temizle",
+    "description": "Shortcut command description"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "ghosttrace",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "GhostTrace - Zero-Trace Privacy Engine (Chrome MV3 extension)",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "test:watch": "node --test --watch \"test/**/*.test.js\"",
+    "e2e:setup": "node tools/fetch-chrome.mjs",
+    "test:e2e": "node test/e2e/scope.e2e.mjs && node test/e2e/observer.e2e.mjs",
+    "test:e2e:live": "node test/e2e/live.e2e.mjs",
+    "test:e2e:frames": "node test/e2e/frame-survey.e2e.mjs",
+    "test:e2e:features": "node test/e2e/features-rules.e2e.mjs && node test/e2e/features-purge.e2e.mjs && node test/e2e/features-system.e2e.mjs && node test/e2e/features-options.e2e.mjs",
+    "test:e2e:incognito": "node test/e2e/features-incognito.e2e.mjs",
+    "test:e2e:hardening": "node test/e2e/features-hardening.e2e.mjs",
+    "lint": "eslint .",
+    "psl:update": "node tools/update-psl.mjs",
+    "package": "node tools/package.mjs",
+    "test:e2e:layout": "node test/e2e/layout.e2e.mjs",
+    "test:e2e:contextmenu": "node test/e2e/features-contextmenu.e2e.mjs",
+    "test:e2e:real": "node test/e2e/real-session.e2e.mjs",
+    "test:e2e:gunluk": "node test/e2e/gunluk-kullanim.e2e.mjs",
+    "test:e2e:muhasebe": "node test/e2e/muhasebe.e2e.mjs",
+    "test:e2e:canli": "node test/e2e/canli-kullanim.e2e.mjs",
+    "test:e2e:matris": "node test/e2e/ozellik-matrisi.e2e.mjs",
+    "test:e2e:gizli": "node test/e2e/gizli-karisik.e2e.mjs",
+    "test:e2e:yetim": "node test/e2e/yetim-supurme.e2e.mjs",
+    "test:e2e:dayaniklilik": "node test/e2e/dayaniklilik.e2e.mjs",
+    "test:e2e:restart": "node test/e2e/yeniden-baslatma.e2e.mjs",
+    "test:e2e:hatalar": "node test/e2e/hata-dogrulama.e2e.mjs",
+    "e2e:kill": "node tools/kill-test-chrome.mjs",
+    "audit:privacy": "node tools/privacy-audit.mjs",
+    "audit:store": "node tools/store-audit.mjs",
+    "audit:i18n": "node tools/i18n-audit.mjs",
+    "audit:ui": "node tools/ui-audit.mjs",
+    "audit:datatypes": "node tools/probe-datatypes.mjs",
+    "audit:hardening": "node tools/probe-privacy-api.mjs",
+    "test:e2e:gecmis": "node test/e2e/istatistik-gecmisi.e2e.mjs",
+    "test:e2e:alarm": "node test/e2e/alarm-gecikmesi.e2e.mjs",
+    "test:e2e:gozlemci": "node test/e2e/gozlemci-geridoldurma.e2e.mjs",
+    "test:e2e:erisim": "node test/e2e/site-erisimi.e2e.mjs"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
