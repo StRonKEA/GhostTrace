@@ -1,5 +1,10 @@
 # GhostTrace — Zero-Trace Privacy Engine (Chrome MV3)
 
+![Release](https://img.shields.io/badge/Release-v1.0.0-20c997?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Chromium%20MV3-00a8ff?style=flat-square)
+![Engine](https://img.shields.io/badge/Engine-Zero--Trace%20MV3-ff9f43?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-85e89d?style=flat-square)
+
 > **Version 1.0.0** · Manifest V3 · Minimum Chrome: 119 · Zero runtime dependencies · Zero telemetry
 
 GhostTrace is an automated, zero-trace privacy and data cleaner extension for Chromium browsers. When you close a tab or leave an unlisted site, GhostTrace automatically removes all cookies, history, storage remnants, and download records left behind by that site — while keeping your whitelisted logins and sessions intact.
